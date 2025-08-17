@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "967617334311",
+    "project_id": "demotraderapp",
+    "storage_bucket": "demotraderapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967617334311:android:093cccec46e7dbd0fe5202",
+        "android_client_info": {
+          "package_name": "com.example.finalproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967617334311-hfkd5rlueq4jch6d8oi3doi8hbkfailp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.finalproject",
+            "certificate_hash": "e05eebc705da2313e104f56cbd314bf1f3d6c792"
+          }
+        },
+        {
+          "client_id": "967617334311-r59bcfgdblt70u0140mvhv7c88apui8p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeOaCcnGvvhNJdaQ3_KG6Ql5YhhaXMdfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967617334311-r59bcfgdblt70u0140mvhv7c88apui8p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "967617334311-g00ueh5mtn9jm4l6rgsqvialrf17pjom.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.finalproject"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
