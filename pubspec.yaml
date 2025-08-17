@@ -1,0 +1,51 @@
+name: finalproject
+description: A new Flutter project for DemoTrader App
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # Routing
+  go_router: ^14.8.1
+  shared_preferences: ^2.1.1
+  google_fonts: ^6.2.1
+
+  # Other useful packages (optional if used in code)
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.7
+  fl_chart: ^0.70.2
+
+  image_picker: ^0.8.7+4
+  path_provider: ^2.0.15
+  collection: ^1.18.0
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.1
+  google_sign_in: ^6.1.0
+  visibility_detector: ^0.4.0+2
+  shimmer_animation: ^2.1.0
+  animate_gradient: ^0.0.3
+  model_viewer_plus: ^1.9.3
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - lib/assets/images/logo_.png
+    - lib/assets/images/cyborg_hand_left.png
+    - lib/assets/images/cyborg_hand_right.png
+    - lib/assets/images/google_logo.png
