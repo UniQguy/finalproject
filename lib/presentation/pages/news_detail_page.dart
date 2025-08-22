@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 /// Detailed page showing full news article with title, time, and image.
 class NewsDetailPage extends StatelessWidget {
@@ -25,6 +26,9 @@ class NewsDetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
         title: Text(
           'News Detail',
           style: GoogleFonts.barlow(
@@ -33,9 +37,10 @@ class NewsDetailPage extends StatelessWidget {
             fontSize: 22 * scale,
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
       ),
       body: ListView(
         padding: EdgeInsets.all(18 * scale),
@@ -88,7 +93,7 @@ class NewsDetailPage extends StatelessWidget {
             time,
             style: GoogleFonts.barlow(
               fontSize: 12 * scale,
-              color: Colors.white38,
+              color: Colors.purpleAccent,
             ),
           ),
           SizedBox(height: 24 * scale),

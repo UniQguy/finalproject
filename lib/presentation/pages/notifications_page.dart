@@ -21,6 +21,13 @@ class NotificationsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
         title: Text(
           'Notifications (${notificationProvider.unreadCount})',
           style: GoogleFonts.barlow(
@@ -30,9 +37,6 @@ class NotificationsPage extends StatelessWidget {
             letterSpacing: 1.2,
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.mark_email_read, color: Colors.purpleAccent),

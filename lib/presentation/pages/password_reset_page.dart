@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../business_logic/providers/auth_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 /// A page allowing the user to initiate a password reset via email.
 class PasswordResetPage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password reset email sent. Check your inbox.')),
         );
-        Navigator.of(context).pop();
+        context.go('/');  // Navigate back to homepage
       }
     } catch (e) {
       if (mounted) {
@@ -40,9 +41,21 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   }
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/login'), // Back to home
+        ),
         title: Text(
           'Reset Password',
           style: GoogleFonts.barlow(
@@ -51,8 +64,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
             color: Colors.purpleAccent,
           ),
         ),
-        backgroundColor: Colors.black,
-        elevation: 0,
+        centerTitle: true,
       ),
       backgroundColor: Colors.black,
       body: Padding(

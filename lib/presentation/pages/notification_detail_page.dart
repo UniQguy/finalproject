@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../../business_logic/models/notification_item.dart';
 
 /// Displays detailed information about a single notification.
@@ -14,6 +15,12 @@ class NotificationDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Navigate to homepage
+        ),
         title: Text(
           'Notification Detail',
           style: GoogleFonts.barlow(
@@ -22,8 +29,6 @@ class NotificationDetailPage extends StatelessWidget {
             color: Colors.purpleAccent,
           ),
         ),
-        backgroundColor: Colors.black,
-        elevation: 0,
       ),
       backgroundColor: Colors.black,
       body: Padding(

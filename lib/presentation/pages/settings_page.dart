@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/app_glassy_card.dart';
 import '../widgets/animated_in_view.dart';
@@ -15,6 +16,13 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
         title: Text(
           'Settings',
           style: GoogleFonts.barlow(
@@ -24,9 +32,6 @@ class SettingsPage extends StatelessWidget {
             letterSpacing: 1.3,
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
       ),
       body: ListView(
         padding: EdgeInsets.all(18 * scale),
@@ -112,7 +117,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget _buildSettingRow(BuildContext context, String title, String route, double scale) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(route),
+      onTap: () => context.go(route),
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 14 * scale),
         child: Row(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/animated_in_view.dart';
 import '../widgets/app_glassy_card.dart';
@@ -41,6 +42,10 @@ class _SearchPageState extends State<SearchPage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
         title: TextField(
           style: TextStyle(color: Colors.white, fontSize: 18 * scale),
           cursorColor: Colors.purpleAccent,

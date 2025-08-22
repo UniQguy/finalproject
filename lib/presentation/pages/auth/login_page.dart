@@ -93,9 +93,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black87,
+        elevation: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to home
+        ),
+        title: const Text('Login'),
+        centerTitle: true,
+      ),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 28 * scale, vertical: 20 * scale),
+          padding: EdgeInsets.symmetric(horizontal: 28 * scale, vertical: 20),
           child: Form(
             key: _formKey,
             child: Column(
@@ -112,7 +122,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                 ),
                 SizedBox(height: 26 * scale),
-                // Email Input
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -128,7 +137,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   },
                 ),
                 SizedBox(height: 16 * scale),
-                // Password Input
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -154,7 +162,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () => context.go('/password-reset'),
+                    onPressed: () => context.go(AppRoutes.passwordReset),
                     child: const Text(
                       'Forgot Password?',
                       style: TextStyle(color: Colors.purpleAccent),
@@ -162,7 +170,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                 ),
                 SizedBox(height: 16 * scale),
-                // Login Button
                 SizedBox(
                   width: double.infinity,
                   height: 48 * scale,
@@ -190,8 +197,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           width: 24 * scale,
                           height: 24 * scale,
                           child: const CircularProgressIndicator(
-                            color: Colors.white,
                             strokeWidth: 2,
+                            color: Colors.white,
                           ),
                         )
                             : Text(
@@ -208,7 +215,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                 ),
                 SizedBox(height: 14 * scale),
-                // Google Sign-In
                 SizedBox(
                   width: double.infinity,
                   height: 46 * scale,
@@ -238,7 +244,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   ),
                 ),
                 SizedBox(height: 12 * scale),
-                // Signup link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -247,14 +252,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       style: TextStyle(color: Colors.white70, fontSize: 14 * scale),
                     ),
                     TextButton(
-                      onPressed: () => context.go('/signup'),
+                      onPressed: () => context.go(AppRoutes.signup),
                       child: Text(
                         'Sign Up',
-                        style: TextStyle(color: Colors.purpleAccent, fontSize: 14 * scale),
+                        style: TextStyle(
+                          color: Colors.purpleAccent,
+                          fontSize: 14 * scale,
+                        ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

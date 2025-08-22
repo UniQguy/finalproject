@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class _NewsPageState extends State<NewsPage> {
   bool isLoading = true;
   bool isError = false;
 
-  final String apiKey = 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20';
+  final String apiKey = 'dummmy_key'; // <-- Use your actual API key
 
   @override
   void initState() {
@@ -39,12 +40,13 @@ class _NewsPageState extends State<NewsPage> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        // Filter to only articles with valid image URLs
+        // Filter to articles with valid image URLs
         newsArticles = data.where((article) =>
         article['image'] != null &&
             article['image'].toString().isNotEmpty &&
             Uri.tryParse(article['image']) != null
         ).toList();
+
         setState(() {
           isLoading = false;
         });
@@ -70,14 +72,34 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
+  String _formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) return '';
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+
+    if (diff.inDays > 1) return '${diff.inDays} days ago';
+    if (diff.inDays == 1) return '1 day ago';
+    if (diff.inHours >= 1) return '${diff.inHours} hours ago';
+    if (diff.inMinutes > 1) return '${diff.inMinutes} minutes ago';
+    return 'Just now';
+  }
+
   @override
   Widget build(BuildContext context) {
-    final scale = MediaQuery.of(context).size.width / 900;
+    final double scale = MediaQuery.of(context).size.width / 900;
 
     if (isLoading) {
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/'), // Back to homepage
+          ),
           title: Text(
             'Market News',
             style: GoogleFonts.barlow(
@@ -87,12 +109,11 @@ class _NewsPageState extends State<NewsPage> {
               letterSpacing: 1.2,
             ),
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
         ),
         body: const Center(
-          child: CircularProgressIndicator(color: Colors.purpleAccent),
+          child: CircularProgressIndicator(
+            color: Colors.purpleAccent,
+          ),
         ),
       );
     }
@@ -101,6 +122,13 @@ class _NewsPageState extends State<NewsPage> {
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'), // Back to homepage
+          ),
           title: Text(
             'Market News',
             style: GoogleFonts.barlow(
@@ -110,14 +138,14 @@ class _NewsPageState extends State<NewsPage> {
               letterSpacing: 1.2,
             ),
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
         ),
         body: Center(
           child: Text(
             'Failed to load news or no valid articles.',
-            style: TextStyle(color: Colors.white54, fontSize: 16 * scale),
+            style: TextStyle(
+              color: Colors.white54,
+              fontSize: 16 * scale,
+            ),
           ),
         ),
       );
@@ -126,6 +154,13 @@ class _NewsPageState extends State<NewsPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'), // Back to homepage
+        ),
         title: Text(
           'Market News',
           style: GoogleFonts.barlow(
@@ -135,9 +170,6 @@ class _NewsPageState extends State<NewsPage> {
             letterSpacing: 1.2,
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
       ),
       body: RefreshIndicator(
         onRefresh: fetchStockNews,
@@ -193,7 +225,7 @@ class _NewsPageState extends State<NewsPage> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.all(12 * scale),
+                            padding: EdgeInsets.all(12),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -239,18 +271,5 @@ class _NewsPageState extends State<NewsPage> {
         ),
       ),
     );
-  }
-
-  String _formatTimestamp(dynamic timestamp) {
-    if (timestamp == null) return '';
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    final now = DateTime.now();
-    final diff = now.difference(dateTime);
-
-    if (diff.inDays > 1) return '${diff.inDays} days ago';
-    if (diff.inDays == 1) return '1 day ago';
-    if (diff.inHours >= 1) return '${diff.inHours} hours ago';
-    if (diff.inMinutes > 1) return '${diff.inMinutes} minutes ago';
-    return 'Just now';
   }
 }

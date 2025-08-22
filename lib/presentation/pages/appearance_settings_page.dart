@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../business_logic/providers/theme_provider.dart';
 
@@ -13,6 +14,12 @@ class AppearanceSettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
         title: Text(
           'Appearance Settings',
           style: GoogleFonts.barlow(
@@ -21,8 +28,6 @@ class AppearanceSettingsPage extends StatelessWidget {
             color: Colors.purpleAccent,
           ),
         ),
-        backgroundColor: Colors.black,
-        elevation: 0,
       ),
       backgroundColor: Colors.black,
       body: Padding(

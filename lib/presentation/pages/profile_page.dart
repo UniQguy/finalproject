@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/app_glassy_card.dart';
 import '../widgets/animated_in_view.dart';
@@ -78,9 +80,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey,
       appBar: AppBar(
-        backgroundColor: isDark ? Colors.grey[850]?.withOpacity(0.8) : Colors.grey[200]?.withOpacity(0.9),
+        backgroundColor:
+        isDark ? Colors.grey?.withOpacity(0.8) : Colors.grey?.withOpacity(0.9),
         centerTitle: true,
         title: Text(
           'Profile',
@@ -92,12 +95,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           ),
         ),
         elevation: 0,
-        leading: Navigator.canPop(context)
-            ? BackButton(
-          color: isDark ? Colors.purpleAccent : Colors.deepPurple,
-          onPressed: () => Navigator.pop(context),
-        )
-            : null,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,
+              color: isDark ? Colors.purpleAccent : Colors.deepPurple),
+          onPressed: () => context.go('/home'), // Navigate back to homepage
+        ),
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
@@ -113,7 +115,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     children: [
                       CircleAvatar(
                         radius: 60 * scale,
-                        backgroundColor: isDark ? Colors.deepPurple.shade500 : Colors.deepPurple.shade300,
+                        backgroundColor:
+                        isDark ? Colors.deepPurple.shade500 : Colors.deepPurple.shade300,
                         backgroundImage: const AssetImage('lib/assets/images/profile_placeholder.png'),
                         child: Semantics(label: 'User Avatar'),
                       ),
@@ -122,10 +125,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         right: 4,
                         child: GestureDetector(
                           onTap: () {
-                            // Add image picker or edit profile picture logic
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Edit Avatar tapped')),
-                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(content: Text('Edit Avatar tapped')));
                           },
                           child: Container(
                             padding: EdgeInsets.all(6 * scale),
@@ -148,8 +149,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     ],
                   ),
                   SizedBox(height: 20 * scale),
-
-                  // Editable Name Field with Save Icon below the avatar
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 48 * scale),
                     child: Row(
@@ -157,51 +156,53 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         Expanded(
                           child: TextField(
                             controller: _nameController,
-                            style: GoogleFonts.barlow(
-                              fontSize: 28 * scale,
-                              fontWeight: FontWeight.w900,
-                              color: isDark ? Colors.white : Colors.black87,
-                            ),
+                            style: TextStyle(
+                                fontSize: 28 * scale,
+                                fontWeight: FontWeight.w900,
+                                color: isDark ? Colors.white : Colors.black87),
                             decoration: InputDecoration(
-                              border: UnderlineInputBorder(borderSide: BorderSide(color: isDark ? Colors.purpleAccent : Colors.deepPurple)),
-                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: isDark ? Colors.purpleAccent.withOpacity(0.7) : Colors.deepPurple.withOpacity(0.7))),
-                              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: isDark ? Colors.purpleAccent : Colors.deepPurple, width: 2)),
+                              border: UnderlineInputBorder(
+                                  borderSide:
+                                  BorderSide(color: isDark ? Colors.purpleAccent : Colors.deepPurple)),
+                              enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: (isDark ? Colors.purpleAccent : Colors.deepPurple)
+                                          .withOpacity(0.7))),
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide:
+                                  BorderSide(color: isDark ? Colors.purpleAccent : Colors.deepPurple, width: 2)),
                               isDense: true,
                               contentPadding: EdgeInsets.symmetric(vertical: 6 * scale),
                               hintText: 'Set up your name',
-                              hintStyle: GoogleFonts.barlow(
-                                fontSize: 20 * scale,
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? Colors.white38 : Colors.black38,
-                              ),
+                              hintStyle: TextStyle(
+                                  fontSize: 20 * scale,
+                                  fontWeight: FontWeight.w500,
+                                  color: isDark ? Colors.white38 : Colors.black38),
                             ),
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.check_circle_outline, color: isDark ? Colors.purpleAccent : Colors.deepPurple, size: 28 * scale),
+                          icon: Icon(Icons.check_circle_outline,
+                              color: isDark ? Colors.purpleAccent : Colors.deepPurple,
+                              size: 28 * scale),
                           tooltip: 'Save Name',
                           onPressed: _saveName,
                         ),
                       ],
                     ),
                   ),
-
                   SizedBox(height: 10 * scale),
-
-                  // Display Email (logged in)
                   Text(
                     widget.userEmail,
-                    style: GoogleFonts.barlow(
-                      fontSize: 14 * scale,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white70 : Colors.black54,
-                    ),
+                    style: TextStyle(
+                        fontSize: 14 * scale,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white70 : Colors.black54),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 38 * scale),
-
             AnimatedInView(
               index: 1,
               child: AppGlassyCard(
@@ -212,20 +213,21 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   children: [
                     Text(
                       'Account Details',
-                      style: GoogleFonts.barlow(
+                      style: TextStyle(
                         fontSize: 20 * scale,
                         fontWeight: FontWeight.bold,
                         color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ...accountDetails.entries.map((entry) => _buildDetailRow(entry.key, entry.value, scale, isDark)).toList(),
+                    ...accountDetails.entries
+                        .map((entry) => _buildDetailRow(entry.key, entry.value, scale, isDark))
+                        .toList(),
                   ],
                 ),
               ),
             ),
             SizedBox(height: 36 * scale),
-
             AnimatedInView(
               index: 2,
               child: AppGlassyCard(
@@ -236,39 +238,38 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   children: [
                     Text(
                       'Preferences',
-                      style: GoogleFonts.barlow(
+                      style: TextStyle(
                         fontSize: 20 * scale,
                         fontWeight: FontWeight.bold,
                         color: isDark ? Colors.white : Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ...preferences.entries.map((entry) => _buildDetailRow(entry.key, entry.value, scale, isDark)).toList(),
+                    ...preferences.entries
+                        .map((entry) => _buildDetailRow(entry.key, entry.value, scale, isDark))
+                        .toList(),
                   ],
                 ),
               ),
             ),
-
             SizedBox(height: 50 * scale),
-
-            // Logout button centered with polished styling
             Center(
-              child: OutlinedButton.icon(
+              child: OutlinedButton(
                 onPressed: _logout,
-                icon: Icon(Icons.logout, color: Colors.redAccent, size: 22 * scale),
-                label: Text(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  padding: EdgeInsets.symmetric(horizontal: 36 * scale, vertical: 16 * scale),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  side: const BorderSide(color: Colors.redAccent, width: 2),
+                ),
+                child: Text(
                   'Logout',
-                  style: GoogleFonts.barlow(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18 * scale,
-                    color: Colors.redAccent,
                   ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.redAccent, width: 2),
-                  padding: EdgeInsets.symmetric(horizontal: 36 * scale, vertical: 16 * scale),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  splashFactory: InkRipple.splashFactory,
                 ),
               ),
             ),
@@ -287,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         children: [
           Text(
             label,
-            style: GoogleFonts.barlow(
+            style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16 * scale,
               color: isDark ? Colors.white70 : Colors.black54,
@@ -295,12 +296,12 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           ),
           Text(
             value,
-            style: GoogleFonts.barlow(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16 * scale,
               color: isDark ? Colors.white : Colors.black87,
             ),
-          ),
+          )
         ],
       ),
     );

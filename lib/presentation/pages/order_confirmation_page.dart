@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../business_logic/models/stock.dart';
+import 'package:go_router/go_router.dart';
 
 /// Displays confirmation details for a placed order, highlighting order type with neon colors.
 class OrderConfirmationPage extends StatelessWidget {
@@ -24,6 +25,10 @@ class OrderConfirmationPage extends StatelessWidget {
         title: const Text('Order Confirmation'),
         backgroundColor: Colors.black,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Navigate back to homepage
+        ),
       ),
       body: Center(
         child: Hero(

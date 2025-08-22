@@ -34,8 +34,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
       if (mounted) context.go(AppRoutes.home);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Signup failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Signup failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -49,8 +48,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
       if (mounted) context.go(AppRoutes.home);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Google Sign-Up failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Google Sign-Up failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _isGoogleLoading = false);
@@ -95,6 +93,16 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black87,
+        elevation: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/login'), // Back to homepage
+        ),
+        title: const Text('Sign Up'),
+        centerTitle: true,
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 32 * scale, vertical: 24),
@@ -114,7 +122,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   ),
                 ),
                 SizedBox(height: 24 * scale),
-                // Email Input
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -127,7 +134,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   },
                 ),
                 SizedBox(height: 16 * scale),
-                // Password Input
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -150,7 +156,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   },
                 ),
                 SizedBox(height: 16 * scale),
-                // Confirm Password Input
                 TextFormField(
                   controller: _confirmController,
                   obscureText: _obscureConfirm,
@@ -173,18 +178,14 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   },
                 ),
                 SizedBox(height: 20 * scale),
-                // Signup button
                 SizedBox(
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _submit,
                     child: _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                      'Sign Up',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18 * scale),
-                    ),
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       backgroundColor: Colors.deepPurpleAccent,
@@ -192,7 +193,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                   ),
                 ),
                 SizedBox(height: 14 * scale),
-                // Google Sign Up button
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -208,22 +208,22 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                       ),
                     )
                         : Image.asset('lib/assets/images/google_logo.png', height: 20),
-                    label: Text('Sign up with Google', style: TextStyle(color: Colors.purpleAccent)),
+                    label: const Text('Sign up with Google'),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.purpleAccent),
+                      side: const BorderSide(color: Colors.purpleAccent),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      foregroundColor: Colors.purpleAccent,
                     ),
                   ),
                 ),
                 SizedBox(height: 16),
-                // Redirect to login
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Already have an account?", style: TextStyle(color: Colors.white70)),
                     TextButton(
                       onPressed: () => context.go(AppRoutes.login),
-                      child: Text('Log In', style: TextStyle(color: Colors.purpleAccent)),
+                      child: const Text('Log In', style: TextStyle(color: Colors.purpleAccent)),
                     ),
                   ],
                 ),

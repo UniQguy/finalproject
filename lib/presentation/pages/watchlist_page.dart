@@ -3,13 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
+
 import '../../business_logic/providers/watchlist_provider.dart';
 import '../../business_logic/providers/market_provider.dart';
 import '../../business_logic/models/stock.dart';
 import '../widgets/app_glassy_card.dart';
 import '../widgets/animated_in_view.dart';
 
-enum SortOption { symbolAsc, symbolDesc, priceAsc, priceDesc }
+enum SortOption { sortBySymbolAsc, sortBySymbolDesc, sortByPriceAsc, sortByPriceDesc }
 
 class WatchlistPage extends StatefulWidget {
   final double scale;
@@ -23,30 +26,32 @@ class WatchlistPage extends StatefulWidget {
 class _WatchlistPageState extends State<WatchlistPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Stock> _filteredStocks = [];
-  SortOption _sortOption = SortOption.symbolAsc;
+  SortOption _sortOption = SortOption.sortBySymbolAsc;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_filterStocks);
-    // Simulate loading delay for shimmer effect
-    Future.delayed(const Duration(seconds: 2), () => setState(() => _isLoading = false));
+    // Simulate loading for shimmer
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _isLoading = false);
+    });
   }
 
   void _filterStocks() {
-    final query = _searchController.text.toLowerCase();
+    String query = _searchController.text.toLowerCase();
     final marketStocks = context.read<MarketProvider>().stocks;
 
     setState(() {
       if (query.isEmpty) {
         _filteredStocks = [];
       } else {
-        _filteredStocks = marketStocks
-            .where((stock) =>
-        stock.symbol.toLowerCase().contains(query) ||
-            stock.company.toLowerCase().contains(query))
-            .toList();
+        _filteredStocks = marketStocks.where((stock) {
+          return stock.symbol.toLowerCase().contains(query) ||
+              stock.company.toLowerCase().contains(query);
+        }).toList();
+
         _filteredStocks = _sortStocks(_filteredStocks);
       }
     });
@@ -55,16 +60,16 @@ class _WatchlistPageState extends State<WatchlistPage> {
   List<Stock> _sortStocks(List<Stock> stocks) {
     List<Stock> sorted = List.from(stocks);
     switch (_sortOption) {
-      case SortOption.symbolAsc:
+      case SortOption.sortBySymbolAsc:
         sorted.sort((a, b) => a.symbol.compareTo(b.symbol));
         break;
-      case SortOption.symbolDesc:
+      case SortOption.sortBySymbolDesc:
         sorted.sort((a, b) => b.symbol.compareTo(a.symbol));
         break;
-      case SortOption.priceAsc:
+      case SortOption.sortByPriceAsc:
         sorted.sort((a, b) => a.price.compareTo(b.price));
         break;
-      case SortOption.priceDesc:
+      case SortOption.sortByPriceDesc:
         sorted.sort((a, b) => b.price.compareTo(a.price));
         break;
     }
@@ -96,8 +101,15 @@ class _WatchlistPageState extends State<WatchlistPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Navigate back to homepage
+        ),
         title: Text(
-          'Manage Watchlist',
+          'Manage Watchlist',
           style: GoogleFonts.barlow(
             color: Colors.purpleAccent,
             fontWeight: FontWeight.bold,
@@ -105,9 +117,6 @@ class _WatchlistPageState extends State<WatchlistPage> {
             letterSpacing: 1.2,
           ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(56 * scale),
           child: Padding(
@@ -131,7 +140,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 12 * scale,
-                        horizontal: 20 * scale,
+                        horizontal: 20,
                       ),
                     ),
                   ),
@@ -140,10 +149,10 @@ class _WatchlistPageState extends State<WatchlistPage> {
                 DropdownButton<SortOption>(
                   dropdownColor: Colors.deepPurple.shade900,
                   value: _sortOption,
-                  onChanged: (value) {
-                    if (value != null) {
+                  onChanged: (SortOption? val) {
+                    if (val != null) {
                       setState(() {
-                        _sortOption = value;
+                        _sortOption = val;
                         if (_filteredStocks.isNotEmpty) {
                           _filteredStocks = _sortStocks(_filteredStocks);
                         }
@@ -152,19 +161,19 @@ class _WatchlistPageState extends State<WatchlistPage> {
                   },
                   items: [
                     DropdownMenuItem(
-                      value: SortOption.symbolAsc,
+                      value: SortOption.sortBySymbolAsc,
                       child: Text('Symbol ↑', style: TextStyle(color: Colors.white)),
                     ),
                     DropdownMenuItem(
-                      value: SortOption.symbolDesc,
+                      value: SortOption.sortBySymbolDesc,
                       child: Text('Symbol ↓', style: TextStyle(color: Colors.white)),
                     ),
                     DropdownMenuItem(
-                      value: SortOption.priceAsc,
+                      value: SortOption.sortByPriceAsc,
                       child: Text('Price ↑', style: TextStyle(color: Colors.white)),
                     ),
                     DropdownMenuItem(
-                      value: SortOption.priceDesc,
+                      value: SortOption.sortByPriceDesc,
                       child: Text('Price ↓', style: TextStyle(color: Colors.white)),
                     ),
                   ],
@@ -177,7 +186,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16 * scale),
+        padding: EdgeInsets.all(16),
         child: _isLoading
             ? Column(
           children: List.generate(
@@ -206,13 +215,13 @@ class _WatchlistPageState extends State<WatchlistPage> {
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             final stock = _filteredStocks[index];
-            final alreadyInWatchlist = context.watch<WatchlistProvider>().isInWatchlist(stock.symbol);
+            final bool alreadyInWatchlist = context.watch<WatchlistProvider>().isInWatchlist(stock.symbol);
 
             return AnimatedInView(
               index: index,
               child: AppGlassyCard(
                 borderRadius: BorderRadius.circular(16 * scale),
-                padding: EdgeInsets.symmetric(vertical: 14 * scale, horizontal: 16 * scale),
+                padding: EdgeInsets.symmetric(vertical: 14 * scale, horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -264,7 +273,7 @@ class _WatchlistPageState extends State<WatchlistPage> {
             : sortedWatchlist.isEmpty
             ? Center(
           child: Text(
-            'Your watchlist is empty.\nSearch and add stocks to watch.',
+            'Your watchlist is empty.\nSearch stocks to add.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white54, fontSize: 18 * scale),
           ),
@@ -291,14 +300,16 @@ class _WatchlistPageState extends State<WatchlistPage> {
               onDismissed: (_) {
                 context.read<WatchlistProvider>().removeStock(stock.symbol);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${stock.symbol} removed from watchlist')),
+                  SnackBar(
+                    content: Text('${stock.symbol} removed from watchlist'),
+                  ),
                 );
               },
               child: AnimatedInView(
                 index: index,
                 child: AppGlassyCard(
                   borderRadius: BorderRadius.circular(16 * scale),
-                  padding: EdgeInsets.symmetric(vertical: 14 * scale, horizontal: 16 * scale),
+                  padding: EdgeInsets.symmetric(vertical: 14 * scale, horizontal: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -342,7 +353,10 @@ class _WatchlistPageState extends State<WatchlistPage> {
                         onPressed: () {
                           context.read<WatchlistProvider>().removeStock(stock.symbol);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('${stock.symbol} removed from watchlist')),
+                            SnackBar(
+                              content:
+                              Text('${stock.symbol} removed from watchlist'),
+                            ),
                           );
                         },
                       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:go_router/go_router.dart';
 import '../../business_logic/providers/portfolio_provider.dart';
 import '../../business_logic/models/trade_order.dart';
 
@@ -26,6 +27,10 @@ class PortfolioPage extends StatelessWidget {
         ),
         backgroundColor: Colors.black,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Navigate back to homepage
+        ),
       ),
       backgroundColor: Colors.black,
       body: Padding(
@@ -95,7 +100,7 @@ class _PortfolioItem extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       title: Text(
         order.stockSymbol,
-        style: GoogleFonts.barlow(
+        style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
           color: Colors.white,
@@ -103,7 +108,7 @@ class _PortfolioItem extends StatelessWidget {
       ),
       subtitle: Text(
         'Quantity: ${order.quantity} | Type: ${order.type}',
-        style: GoogleFonts.barlow(color: Colors.white70),
+        style: const TextStyle(color: Colors.white70),
       ),
       trailing: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -111,7 +116,7 @@ class _PortfolioItem extends StatelessWidget {
         children: [
           Text(
             '₹${holdingValue.toStringAsFixed(2)}',
-            style: GoogleFonts.barlow(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
               color: Colors.purpleAccent,

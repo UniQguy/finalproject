@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../business_logic/models/stock.dart';
 import '../../business_logic/services/api_service.dart';
@@ -80,6 +81,10 @@ class _TradePageState extends State<TradePage> {
         backgroundColor: Colors.black,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
       ),
       backgroundColor: Colors.black,
       body: _isLoading
@@ -95,9 +100,7 @@ class _TradePageState extends State<TradePage> {
           child: Text(
             _error!,
             style: const TextStyle(
-                color: Colors.redAccent,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
+                color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
         ),
@@ -157,12 +160,13 @@ class _TradePageState extends State<TradePage> {
                 filled: true,
                 fillColor: Colors.white10,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 hintText: 'Enter quantity',
                 hintStyle: const TextStyle(color: Colors.white54),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
               onChanged: (val) {
                 final q = int.tryParse(val);
@@ -182,7 +186,8 @@ class _TradePageState extends State<TradePage> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent,
-                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -191,7 +196,9 @@ class _TradePageState extends State<TradePage> {
                 child: Text(
                   'Place Order - ₹${(_stock!.price * _quantity).toStringAsFixed(2)}',
                   style: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
               ),
             ),

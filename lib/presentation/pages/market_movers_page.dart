@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/market_movers_widget.dart';
 
 /// Page displaying the market movers using the MarketMoversWidget.
@@ -15,6 +16,10 @@ class MarketMoversPage extends StatelessWidget {
         backgroundColor: Colors.black,
         foregroundColor: Colors.deepPurpleAccent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
       ),
       backgroundColor: Colors.black,
       body: Padding(

@@ -47,7 +47,7 @@ class StockChartPage extends StatelessWidget {
             color: Colors.deepPurpleAccent,
             size: 24 * scale,
           ),
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/home'),  // Back to homepage
           splashRadius: 22,
         ),
         title: Text(
@@ -117,7 +117,7 @@ class StockChartPage extends StatelessWidget {
                     show: true,
                     horizontalInterval: yRange > 0 ? yRange / 5 : 1,
                     drawHorizontalLine: true,
-                    getDrawingHorizontalLine: (value) => FlLine(
+                    getDrawingHorizontalLine: (value) => const FlLine(
                       color: Colors.white12,
                       strokeWidth: 1,
                     ),
@@ -220,7 +220,6 @@ class StockChartPage extends StatelessWidget {
     );
   }
 
-  // Bottom axis labels showing date offsets
   static Widget _bottomTitleWidgets(double value, TitleMeta meta) {
     final index = value.toInt();
     if (index < 0 || index > meta.max.toInt()) return const SizedBox.shrink();
@@ -237,7 +236,6 @@ class StockChartPage extends StatelessWidget {
     );
   }
 
-  // Left axis labels showing price values
   static Widget _leftTitleWidgets(double value, TitleMeta meta) {
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -272,4 +270,3 @@ class _PeriodButton extends StatelessWidget {
     );
   }
 }
-

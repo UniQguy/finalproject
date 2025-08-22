@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../business_logic/providers/notification_provider.dart';
 
@@ -14,6 +15,12 @@ class NotificationSettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/home'), // Back to homepage
+        ),
         title: Text(
           'Notification Settings',
           style: GoogleFonts.barlow(
@@ -22,8 +29,6 @@ class NotificationSettingsPage extends StatelessWidget {
             color: Colors.purpleAccent,
           ),
         ),
-        backgroundColor: Colors.black,
-        elevation: 0,
       ),
       backgroundColor: Colors.black,
       body: ListView(
