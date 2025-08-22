@@ -11,7 +11,7 @@ class StockTicker extends StatefulWidget {
 }
 
 class _StockTickerState extends State<StockTicker> {
-  late ScrollController _scrollController;
+  late final ScrollController _scrollController;
   Timer? _timer;
 
   @override
@@ -29,16 +29,19 @@ class _StockTickerState extends State<StockTicker> {
     const int refreshRateMs = 16;
     final double scrollAmountPerTick = scrollSpeed * refreshRateMs / 1000;
 
-    _timer = Timer.periodic(Duration(milliseconds: refreshRateMs), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: refreshRateMs), (timer) async {
       if (!_scrollController.hasClients) return;
 
-      double maxScroll = _scrollController.position.maxScrollExtent;
-      double currentScroll = _scrollController.offset;
-      double nextScroll = currentScroll + scrollAmountPerTick;
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.offset;
+      final nextScroll = currentScroll + scrollAmountPerTick;
 
       if (nextScroll >= maxScroll) {
-        // Loop back to start smoothly
-        _scrollController.jumpTo(0);
+        await _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       } else {
         _scrollController.jumpTo(nextScroll);
       }
@@ -62,7 +65,7 @@ class _StockTickerState extends State<StockTicker> {
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: stocks.length * 2, // duplicate items for smooth loop
+        itemCount: stocks.length * 2, // duplicate for seamless looping
         itemBuilder: (context, index) {
           final stock = stocks[index % stocks.length];
           return _StockTickerItem(stock: stock);
@@ -82,7 +85,7 @@ class _StockTickerItem extends StatefulWidget {
 }
 
 class _StockTickerItemState extends State<_StockTickerItem> with SingleTickerProviderStateMixin {
-  late AnimationController _animController;
+  late final AnimationController _animController;
   late Animation<Color?> _colorAnimation;
   late double _oldPrice;
 
@@ -127,45 +130,46 @@ class _StockTickerItemState extends State<_StockTickerItem> with SingleTickerPro
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: _animController,
-        builder: (context, _) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Text(
-                  widget.stock.symbol,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.purpleAccent.shade100,
-                    shadows: const [
-                      Shadow(
-                        color: Colors.deepPurple,
-                        blurRadius: 5,
-                        offset: Offset(0, 0),
-                      ),
-                    ],
-                  ),
+      animation: _animController,
+      builder: (context, _) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              Text(
+                widget.stock.symbol,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.purpleAccent.shade100,
+                  shadows: const [
+                    Shadow(
+                      color: Colors.deepPurple,
+                      blurRadius: 5,
+                      offset: Offset(0, 0),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  '₹${widget.stock.price.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: _colorAnimation.value,
-                    fontSize: 16,
-                  ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '₹${widget.stock.price.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _colorAnimation.value,
+                  fontSize: 16,
                 ),
-                const SizedBox(width: 4),
-                Icon(
-                  widget.stock.isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                  color: widget.stock.isUp ? Colors.greenAccent : Colors.redAccent,
-                  size: 20,
-                ),
-              ],
-            ),
-          );
-        });
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                widget.stock.isUp ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                color: widget.stock.isUp ? Colors.greenAccent : Colors.redAccent,
+                size: 20,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

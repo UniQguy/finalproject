@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Added to save onboarding flag
+import 'package:shared_preferences/shared_preferences.dart'; // To save onboarding seen flag
 import '../../routes/app_routes.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -74,7 +74,6 @@ class _OnboardingPageState extends State<OnboardingPage>
 
   @override
   Widget build(BuildContext context) {
-    // Padding from top to position morphing line animation a bit below
     const double topPadding = 140;
 
     return Scaffold(
@@ -82,7 +81,7 @@ class _OnboardingPageState extends State<OnboardingPage>
       body: SafeArea(
         child: Stack(
           children: [
-            // Positioned morphing line animation a bit below top center
+            // Morphing line animation near the top center
             Positioned(
               top: topPadding,
               left: 0,
@@ -123,28 +122,31 @@ class _OnboardingPageState extends State<OnboardingPage>
                                 duration: const Duration(milliseconds: 600),
                                 transitionBuilder: (child, animation) {
                                   switch (_current) {
-                                    case 0: // Bounce in for Trade Smarter
+                                    case 0:
                                       return ScaleTransition(
                                         scale: CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.elasticOut),
+                                          parent: animation,
+                                          curve: Curves.elasticOut,
+                                        ),
                                         child: child,
                                       );
-                                    case 1: // Rotation + zoom for Put & Call
+                                    case 1:
                                       return RotationTransition(
                                         turns: animation,
                                         child: ScaleTransition(
-                                            scale: animation, child: child),
+                                          scale: animation,
+                                          child: child,
+                                        ),
                                       );
-                                    case 2: // Fade + slide up for Track Portfolio
+                                    case 2:
                                     default:
                                       return FadeTransition(
                                         opacity: animation,
                                         child: SlideTransition(
                                           position: Tween<Offset>(
-                                              begin: const Offset(0, 0.2),
-                                              end: Offset.zero)
-                                              .animate(animation),
+                                            begin: const Offset(0, 0.2),
+                                            end: Offset.zero,
+                                          ).animate(animation),
                                           child: child,
                                         ),
                                       );
@@ -169,8 +171,8 @@ class _OnboardingPageState extends State<OnboardingPage>
                                 Shadow(
                                   color: Colors.deepPurpleAccent.withOpacity(0.7),
                                   blurRadius: 20,
-                                  offset: const Offset(0, 0),
-                                )
+                                  offset: Offset.zero,
+                                ),
                               ],
                             ),
                           ),
@@ -226,7 +228,8 @@ class _OnboardingPageState extends State<OnboardingPage>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purpleAccent,
                       minimumSize: const Size(double.infinity, 54),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
                       elevation: 14,
                     ),
                     onPressed: () async {
@@ -259,7 +262,7 @@ class _OnboardingPageState extends State<OnboardingPage>
 }
 
 class MorphingLinePainter extends CustomPainter {
-  final double progress; // 0 to 1 animation progress
+  final double progress;
   final int slideIndex;
   final Color color;
 
@@ -281,12 +284,10 @@ class MorphingLinePainter extends CustomPainter {
     final centerX = size.width / 2;
     final centerY = size.height / 2;
 
-    // Base line parameters
     const baseLength = 140.0;
 
     switch (slideIndex) {
       case 0:
-      // Slide 1: Single rising pulse line that transforms into a bar-like shape
         double lineProgress = progress;
 
         path.moveTo(centerX - baseLength / 2, centerY);
@@ -295,12 +296,7 @@ class MorphingLinePainter extends CustomPainter {
         double controlX = centerX;
         double controlY = centerY - peakHeight;
 
-        path.quadraticBezierTo(
-          controlX,
-          controlY,
-          centerX + baseLength / 2,
-          centerY,
-        );
+        path.quadraticBezierTo(controlX, controlY, centerX + baseLength / 2, centerY);
 
         canvas.drawPath(path, paint);
 
@@ -310,24 +306,18 @@ class MorphingLinePainter extends CustomPainter {
           double barX = centerX - baseLength / 2 + i * spacing;
           double barHeight = 0;
           if (lineProgress > 0.3) {
-            // Adjust barProgress so bars start growing from zero smoothly
             double barProgress = ((lineProgress - 0.3) * 1.5 - i * 0.1).clamp(0.0, 1.0);
-            // Use smoothSin curve to avoid bars collapsing
             double sinFactor = 0.5 + 0.5 * sin(i * pi / 3);
             barHeight = 30 * barProgress * sinFactor;
           }
           if (barHeight > 0) {
             paint.strokeWidth = barWidth;
-            canvas.drawLine(
-                Offset(barX, centerY),
-                Offset(barX, centerY - barHeight),
-                paint);
+            canvas.drawLine(Offset(barX, centerY), Offset(barX, centerY - barHeight), paint);
           }
         }
         break;
 
       case 1:
-      // Slide 2: Arrow morphing with swooping lines from single base
         double morph = progress;
 
         final leftStartX = centerX - baseLength / 3;
@@ -368,8 +358,6 @@ class MorphingLinePainter extends CustomPainter {
 
       case 2:
       default:
-      // Slide 3: Floating stats dots line flowing from left to right with a pulse
-
         int dotCount = 8;
         double spacing = baseLength / (dotCount - 1);
 
@@ -389,9 +377,10 @@ class MorphingLinePainter extends CustomPainter {
           ..color = color.withOpacity(0.4)
           ..strokeWidth = 2;
         canvas.drawLine(
-            Offset(centerX - baseLength / 2, centerY),
-            Offset(centerX + baseLength / 2, centerY),
-            paint);
+          Offset(centerX - baseLength / 2, centerY),
+          Offset(centerX + baseLength / 2, centerY),
+          paint,
+        );
         break;
     }
   }

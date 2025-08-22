@@ -44,6 +44,8 @@ class _ParallaxDraggableCardState extends State<ParallaxDraggableCard> {
 
   @override
   Widget build(BuildContext context) {
+    final scaleValue = _dragging ? widget.scaleOnDrag : 1.0;
+
     return MouseRegion(
       onHover: (event) {
         if (!_dragging) {
@@ -63,13 +65,15 @@ class _ParallaxDraggableCardState extends State<ParallaxDraggableCard> {
           _dragging = true;
           final renderBox = context.findRenderObject() as RenderBox?;
           if (renderBox != null) {
-            _updateTilt(renderBox.globalToLocal(details.globalPosition), renderBox.size);
+            _updateTilt(
+                renderBox.globalToLocal(details.globalPosition), renderBox.size);
           }
         },
         onPanUpdate: (details) {
           final renderBox = context.findRenderObject() as RenderBox?;
           if (renderBox != null) {
-            _updateTilt(renderBox.globalToLocal(details.globalPosition), renderBox.size);
+            _updateTilt(
+                renderBox.globalToLocal(details.globalPosition), renderBox.size);
           }
         },
         onPanEnd: (_) {
@@ -86,7 +90,8 @@ class _ParallaxDraggableCardState extends State<ParallaxDraggableCard> {
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.001)
             ..rotateX(_tiltX)
-            ..rotateY(_tiltY),
+            ..rotateY(_tiltY)
+            ..scale(scaleValue),
           child: widget.child,
         ),
       ),

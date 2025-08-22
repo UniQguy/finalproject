@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -11,7 +12,7 @@ import '../../business_logic/models/stock.dart';
 import '../../business_logic/models/trade_order.dart';
 import '../widgets/animated_gradient_widget.dart';
 import '../../business_logic/providers/portfolio_provider.dart';
-import '../../business_logic/providers/theme_provider.dart'; // Added import
+import '../../business_logic/providers/theme_provider.dart';
 
 class DemoTradingScreen extends StatefulWidget {
   const DemoTradingScreen({super.key});
@@ -33,8 +34,12 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
   @override
   void initState() {
     super.initState();
-    _buttonController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    _buttonScale = CurvedAnimation(parent: _buttonController, curve: Curves.elasticOut);
+    _buttonController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _buttonScale =
+        CurvedAnimation(parent: _buttonController, curve: Curves.elasticOut);
     _buttonController.forward();
   }
 
@@ -84,7 +89,7 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
   @override
   Widget build(BuildContext context) {
     final stocks = context.watch<MarketProvider>().stocks;
-    final themeProvider = context.watch<ThemeProvider>(); // Obtained ThemeProvider
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -107,10 +112,12 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                         fontSize: 24,
                         letterSpacing: 6,
                       ),
-                      gradient: const LinearGradient(colors: [
-                        Colors.purpleAccent,
-                        Colors.tealAccent,
-                      ]),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Colors.purpleAccent,
+                          Colors.tealAccent,
+                        ],
+                      ),
                     ),
                     background: Container(
                       decoration: const BoxDecoration(
@@ -131,9 +138,10 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                       child: AppGlassyCard(
                         borderRadius: BorderRadius.circular(24),
                         padding: const EdgeInsets.all(16),
-                        borderColor: themeProvider.primaryColor, // Added borderColor
+                        borderColor: themeProvider.primaryColor,
                         child: DropdownButtonFormField<Stock>(
-                          decoration: _inputDecoration('Select Stock', icon: Icons.show_chart),
+                          decoration:
+                          _inputDecoration('Select Stock', icon: Icons.show_chart),
                           value: _selectedStock,
                           dropdownColor: Colors.black87,
                           style: const TextStyle(
@@ -143,8 +151,10 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                           ),
                           items: stocks
                               .map((stock) => DropdownMenuItem(
-                              value: stock,
-                              child: Text('${stock.symbol} - ₹${stock.price.toStringAsFixed(2)}')))
+                            value: stock,
+                            child: Text(
+                                '${stock.symbol} - ₹${stock.price.toStringAsFixed(2)}'),
+                          ))
                               .toList(),
                           onChanged: (s) => setState(() => _selectedStock = s),
                         ),
@@ -155,8 +165,9 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                       index: 1,
                       child: AppGlassyCard(
                         borderRadius: BorderRadius.circular(24),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                        borderColor: themeProvider.primaryColor, // Added borderColor
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        borderColor: themeProvider.primaryColor,
                         child: TextFormField(
                           initialValue: '1',
                           keyboardType: TextInputType.number,
@@ -164,7 +175,8 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                               color: Colors.tealAccent, fontWeight: FontWeight.bold),
                           decoration:
                           _inputDecoration('Quantity', icon: Icons.confirmation_number),
-                          onChanged: (v) => setState(() => _quantity = int.tryParse(v) ?? 1),
+                          onChanged: (v) =>
+                              setState(() => _quantity = int.tryParse(v) ?? 1),
                         ),
                       ),
                     ),
@@ -174,13 +186,14 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                       child: AppGlassyCard(
                         borderRadius: BorderRadius.circular(24),
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        borderColor: themeProvider.primaryColor, // Added borderColor
+                        borderColor: themeProvider.primaryColor,
                         child: ToggleButtons(
                           fillColor: Colors.tealAccent,
                           color: Colors.black,
                           selectedColor: Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          constraints: const BoxConstraints(minHeight: 48, minWidth: 130),
+                          constraints:
+                          const BoxConstraints(minHeight: 48, minWidth: 130),
                           isSelected: [_isCall, !_isCall],
                           onPressed: (i) => setState(() => _isCall = i == 0),
                           children: [
@@ -209,15 +222,16 @@ class _DemoTradingScreenState extends State<DemoTradingScreen>
                       EnhancedRealtimeChart(
                         stockSymbol: _selectedStock!.symbol,
                         isCallOption: _isCall,
-                      ),
-                    if (_selectedStock == null)
+                      )
+                    else
                       Center(
                         child: Text(
                           'Select a stock to see live trend chart.',
                           style: TextStyle(
-                              color: Colors.tealAccent.withOpacity(0.6),
-                              fontSize: 16,
-                              letterSpacing: 1.2),
+                            color: Colors.tealAccent.withOpacity(0.6),
+                            fontSize: 16,
+                            letterSpacing: 1.2,
+                          ),
                         ),
                       ),
                     const SizedBox(height: 38),

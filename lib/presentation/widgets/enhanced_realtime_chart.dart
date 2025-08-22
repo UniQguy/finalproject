@@ -1,13 +1,14 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import 'animated_in_view.dart';
 import 'app_glassy_card.dart';
 import 'gradient_text.dart';
+import '../../business_logic/models/stock.dart';
 import '../../business_logic/providers/market_provider.dart';
 import '../../business_logic/providers/theme_provider.dart';
-import '../../business_logic/models/stock.dart';
+import 'package:provider/provider.dart';
 
 class PulsingDot extends StatefulWidget {
   final Color color;
@@ -19,18 +20,21 @@ class PulsingDot extends StatefulWidget {
   State<PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState extends State<PulsingDot>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+class _PulsingDotState extends State<PulsingDot> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
-    _controller =
-    AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..repeat(reverse: true);
-    _animation =
-        Tween(begin: 0.6, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -76,10 +80,16 @@ class EnhancedRealtimeChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final marketProvider = context.watch<MarketProvider>();
     final themeProvider = context.watch<ThemeProvider>();
+
     final stock = marketProvider.stocks.firstWhere(
           (s) => s.symbol == stockSymbol,
-      orElse: () =>
-          Stock(symbol: stockSymbol, name: '', price: 0, previousClose: 0),
+      orElse: () => Stock(
+        symbol: stockSymbol,
+        company: '',
+        price: 0,
+        previousClose: 0,
+        recentPrices: [],
+      ),
     );
 
     if (stock.recentPrices.isEmpty) {
@@ -91,38 +101,42 @@ class EnhancedRealtimeChart extends StatelessWidget {
       );
     }
 
-    final spots = [
-      for (int i = 0; i < stock.recentPrices.length; i++)
-        FlSpot(i.toDouble(), stock.recentPrices[i])
-    ];
+    final spots = List<FlSpot>.generate(
+      stock.recentPrices.length,
+          (i) => FlSpot(i.toDouble(), stock.recentPrices[i]),
+    );
 
     final minPrice = stock.recentPrices.reduce((a, b) => a < b ? a : b);
     final maxPrice = stock.recentPrices.reduce((a, b) => a > b ? a : b);
 
     final gradientColors = [
-      themeProvider.primaryColor, // dynamic primary
+      themeProvider.primaryColor,
       themeProvider.primaryColor.withOpacity(0.6),
     ];
 
     List<LineChartBarData> glowBars() {
       final bars = <LineChartBarData>[];
       for (int i = 3; i >= 1; i--) {
-        bars.add(LineChartBarData(
-          spots: spots,
-          isCurved: true,
-          color: gradientColors.first.withOpacity(0.1 * i),
-          barWidth: 4.0 + 3.0 * i.toDouble(),
-          isStrokeCapRound: true,
-          dotData: FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
-        ));
+        bars.add(
+          LineChartBarData(
+            spots: spots,
+            isCurved: true,
+            color: gradientColors.first.withOpacity(0.1 * i),
+            barWidth: 4.0 + 3.0 * i.toDouble(),
+            isStrokeCapRound: true,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(show: false),
+          ),
+        );
       }
       bars.add(
         LineChartBarData(
           spots: spots,
           isCurved: true,
           gradient: LinearGradient(
-            colors: gradientColors.map((c) => c.withOpacity(0.9)).toList(),
+            colors: [
+              for (final c in gradientColors) c.withOpacity(0.9),
+            ],
           ),
           barWidth: 4.0,
           isStrokeCapRound: true,
@@ -130,7 +144,9 @@ class EnhancedRealtimeChart extends StatelessWidget {
           belowBarData: BarAreaData(
             show: true,
             gradient: LinearGradient(
-              colors: gradientColors.map((c) => c.withOpacity(0.4)).toList(),
+              colors: [
+                for (final c in gradientColors) c.withOpacity(0.4),
+              ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -141,10 +157,10 @@ class EnhancedRealtimeChart extends StatelessWidget {
     }
 
     return AnimatedInView(
+      index: 0,
       child: AppGlassyCard(
         borderRadius: BorderRadius.circular(28),
         padding: const EdgeInsets.all(20),
-        borderColor: themeProvider.primaryColor, // dynamic border
         child: SizedBox(
           height: 200,
           child: Column(
@@ -165,13 +181,18 @@ class EnhancedRealtimeChart extends StatelessWidget {
                   GradientText(
                     text: '$stockSymbol ${isCallOption ? "Call" : "Put"} Trend',
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w900),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 20,
+                    ),
                   ),
                   const Spacer(),
-                  PulsingDot(color: themeProvider.primaryColor, size: 16),
+                  PulsingDot(
+                    color: themeProvider.primaryColor,
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Text(
-                    "₹${stock.price.toStringAsFixed(2)}",
+                    '₹${stock.price.toStringAsFixed(2)}',
                     style: TextStyle(
                       color: themeProvider.primaryColor,
                       fontWeight: FontWeight.bold,
@@ -187,10 +208,10 @@ class EnhancedRealtimeChart extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     gridData: FlGridData(
                       show: true,
-                      drawVerticalLine: false,
                       horizontalInterval: (maxPrice - minPrice) / 5,
-                      getDrawingHorizontalLine: (_) => FlLine(
-                        color: Colors.white12,
+                      drawVerticalLine: false,
+                      getDrawingHorizontalLine: (value) => FlLine(
+                        color: Colors.white.withOpacity(0.1),
                         strokeWidth: 1,
                         dashArray: [5, 10],
                       ),

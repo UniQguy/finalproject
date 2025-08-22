@@ -22,7 +22,7 @@ dependencies:
   # Other useful packages (optional if used in code)
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.7
-  fl_chart: ^0.70.2
+  fl_chart: ^0.63.0
 
   image_picker: ^0.8.7+4
   path_provider: ^2.0.15
@@ -34,6 +34,12 @@ dependencies:
   shimmer_animation: ^2.1.0
   animate_gradient: ^0.0.3
   model_viewer_plus: ^1.9.3
+  candlesticks: ^2.1.0
+  http: ^1.1.0
+  intl: ^0.18.1
+  url_launcher: ^6.1.10
+
+
 
 
 dev_dependencies:

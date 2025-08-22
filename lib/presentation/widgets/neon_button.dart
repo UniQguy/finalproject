@@ -5,8 +5,8 @@ import '../../business_logic/providers/theme_provider.dart';
 class NeonButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
-  final Color? color; // Optional override
-  final Color? textColor;
+  final Color? color; // Optional override for background color
+  final Color? textColor; // Optional override for text color
 
   const NeonButton({
     super.key,
@@ -25,7 +25,9 @@ class NeonButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
         shadowColor: buttonColor.withOpacity(0.7),
         elevation: 14,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),

@@ -20,9 +20,9 @@ class AnimatedRealtimeChart extends StatefulWidget {
 
 class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late List<FlSpot> spots;
-  late Color glowColor;
+  late final AnimationController _animationController;
+  late final List<FlSpot> spots;
+  late final Color glowColor;
 
   @override
   void initState() {
@@ -35,10 +35,11 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    // Sample data: sine wave spots to simulate live data
-    spots = List.generate(30, (index) {
-      return FlSpot(index.toDouble(), 50 + 10 * sin(index * pi / 15));
-    });
+    // Generate sine wave data to simulate live price movement
+    spots = List.generate(
+      30,
+          (i) => FlSpot(i.toDouble(), 50 + 10 * sin(i * pi / 15)),
+    );
   }
 
   @override
@@ -55,9 +56,9 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
         glowColor.withOpacity(0.3),
       ],
       stops: [
-        (animationValue - 0.2).clamp(0, 1),
-        animationValue.clamp(0, 1),
-        (animationValue + 0.2).clamp(0, 1),
+        (animationValue - 0.2).clamp(0.0, 1.0),
+        animationValue.clamp(0.0, 1.0),
+        (animationValue + 0.2).clamp(0.0, 1.0),
       ],
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
@@ -68,20 +69,35 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animationController,
-      builder: (_, __) {
+      builder: (context, child) {
         return SizedBox(
           height: 180,
           child: LineChart(
             LineChartData(
               minX: 0,
-              maxX: spots.length - 1.toDouble(),
+              maxX: spots.length - 1,
               minY: 30,
               maxY: 90,
+              lineTouchData: LineTouchData(
+                enabled: true,
+                handleBuiltInTouches: true,
+              ),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                horizontalInterval: 10,
+                getDrawingHorizontalLine: (value) => FlLine(
+                  color: Colors.white.withOpacity(0.1),
+                  strokeWidth: 1,
+                ),
+              ),
+              borderData: FlBorderData(show: false),
+              titlesData: FlTitlesData(show: false),
               lineBarsData: [
                 LineChartBarData(
                   spots: spots,
                   isCurved: true,
-                  // Removed preventCurveOvershooting to fix the error
+                  curveSmoothness: 0.3,
                   barWidth: 4,
                   isStrokeCapRound: true,
                   color: glowColor,
@@ -93,17 +109,6 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
                   dotData: FlDotData(show: false),
                 ),
               ],
-              gridData: FlGridData(
-                show: true,
-                drawVerticalLine: false,
-                horizontalInterval: 10,
-              ),
-              borderData: FlBorderData(show: false),
-              titlesData: FlTitlesData(show: false),
-              lineTouchData: LineTouchData(
-                enabled: true,
-                handleBuiltInTouches: true,
-              ),
             ),
           ),
         );

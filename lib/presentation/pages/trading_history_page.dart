@@ -25,7 +25,7 @@ class TradingHistoryPage extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16),
               children: [
-                // Page heading
+                // Page heading with gradient text
                 GradientText(
                   text: '📜 Trading History',
                   style: const TextStyle(
@@ -37,14 +37,14 @@ class TradingHistoryPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 if (history.isEmpty)
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Text(
                         "No past trades found.",
-                        style: TextStyle(color: Colors.white54, fontSize: 14),
+                        style: TextStyle(color: Colors.white54, fontSize: 16),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   )
@@ -54,38 +54,34 @@ class TradingHistoryPage extends StatelessWidget {
                     final TradeOrder order = entry.value;
                     final bool isBuy = order.type == OrderType.call;
                     final String typeLabel = isBuy ? "Buy" : "Sell";
-                    final Color typeColor =
-                    isBuy ? Colors.greenAccent : Colors.redAccent;
+                    final Color typeColor = isBuy ? Colors.greenAccent : Colors.redAccent;
 
                     return AnimatedInView(
                       index: index,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 12.0),
                         child: AppGlassyCard(
-                          padding: const EdgeInsets.all(14),
-                          borderColor: typeColor, // ✅ Added required borderColor
+                          padding: const EdgeInsets.all(16),
+                          borderColor: typeColor,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Icon / indicator
+                              // Indicator icon
                               Container(
-                                width: 36,
-                                height: 36,
+                                width: 40,
+                                height: 40,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: typeColor.withOpacity(0.15),
-                                  border:
-                                  Border.all(color: typeColor, width: 1.5),
+                                  color: typeColor.withOpacity(0.2),
+                                  border: Border.all(color: typeColor, width: 1.5),
                                 ),
                                 child: Icon(
-                                  isBuy
-                                      ? Icons.arrow_upward
-                                      : Icons.arrow_downward,
+                                  isBuy ? Icons.arrow_upward : Icons.arrow_downward,
                                   color: typeColor,
-                                  size: 18,
+                                  size: 20,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 16),
                               // Trade details
                               Expanded(
                                 child: Column(
@@ -96,15 +92,15 @@ class TradingHistoryPage extends StatelessWidget {
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 15,
+                                        fontSize: 16,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 6),
                                     Text(
                                       _formatDate(order.timestamp),
                                       style: const TextStyle(
                                         color: Colors.white54,
-                                        fontSize: 12,
+                                        fontSize: 13,
                                       ),
                                     ),
                                   ],
@@ -125,9 +121,11 @@ class TradingHistoryPage extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return "${date.day.toString().padLeft(2, '0')}/"
-        "${date.month.toString().padLeft(2, '0')}/"
-        "${date.year}  ${date.hour.toString().padLeft(2, '0')}:"
-        "${date.minute.toString().padLeft(2, '0')}";
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year.toString();
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$day/$month/$year  $hour:$minute';
   }
 }

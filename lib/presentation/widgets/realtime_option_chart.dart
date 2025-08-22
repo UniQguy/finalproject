@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-import '../widgets/animated_wrappers.dart'; // AnimatedInView + AppGlassyCard
+import '../widgets/animated_wrappers.dart'; // For AnimatedInView ONLY
+import '../widgets/app_glassy_card.dart';   // For AppGlassyCard ONLY
 import '../../business_logic/providers/market_provider.dart';
 import '../../business_logic/models/stock.dart';
 
@@ -29,8 +30,7 @@ class _RealtimeOptionChartState extends State<RealtimeOptionChart> {
   void initState() {
     super.initState();
     _fetchInitialData();
-    _timer =
-        Timer.periodic(const Duration(seconds: 10), (_) => _fetchLatestData());
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) => _fetchLatestData());
   }
 
   void _fetchInitialData() {
@@ -39,15 +39,16 @@ class _RealtimeOptionChartState extends State<RealtimeOptionChart> {
           (s) => s.symbol == widget.stockSymbol,
       orElse: () => Stock(
         symbol: widget.stockSymbol,
-        name: widget.stockSymbol,
+        company: widget.stockSymbol,
         price: 0,
         previousClose: 0,
+        recentPrices: [],
       ),
     );
 
-    // Use recentPrices if available; otherwise fall back to current price
-    if (stock.recentPrices.isNotEmpty) {
-      _pricePoints = List<double>.from(stock.recentPrices);
+    final dynamic dynamicStock = stock;
+    if (dynamicStock.recentPrices is List<double> && (dynamicStock.recentPrices as List).isNotEmpty) {
+      _pricePoints = List<double>.from(dynamicStock.recentPrices);
     } else {
       _pricePoints = [stock.price];
     }
@@ -60,9 +61,10 @@ class _RealtimeOptionChartState extends State<RealtimeOptionChart> {
           (s) => s.symbol == widget.stockSymbol,
       orElse: () => Stock(
         symbol: widget.stockSymbol,
-        name: widget.stockSymbol,
+        company: widget.stockSymbol,
         price: 0,
         previousClose: 0,
+        recentPrices: [],
       ),
     );
 
@@ -88,7 +90,16 @@ class _RealtimeOptionChartState extends State<RealtimeOptionChart> {
         child: Center(child: CircularProgressIndicator()),
       );
     }
+
+    final minPrice = _pricePoints.reduce((a, b) => a < b ? a : b) * 0.95;
+    final maxPrice = _pricePoints.reduce((a, b) => a > b ? a : b) * 1.05;
+
+    final gradientColors = widget.isCallOption
+        ? [Colors.blueAccent, Colors.lightBlueAccent]
+        : [Colors.redAccent, Colors.orangeAccent];
+
     return AnimatedInView(
+      index: 0, // Required index parameter added here
       child: AppGlassyCard(
         padding: const EdgeInsets.all(12),
         child: SizedBox(
@@ -101,8 +112,8 @@ class _RealtimeOptionChartState extends State<RealtimeOptionChart> {
               borderData: FlBorderData(show: false),
               minX: 0,
               maxX: (_pricePoints.length - 1).toDouble(),
-              minY: _pricePoints.reduce((a, b) => a < b ? a : b) * 0.95,
-              maxY: _pricePoints.reduce((a, b) => a > b ? a : b) * 1.05,
+              minY: minPrice,
+              maxY: maxPrice,
               lineBarsData: [
                 LineChartBarData(
                   spots: List.generate(
@@ -110,11 +121,7 @@ class _RealtimeOptionChartState extends State<RealtimeOptionChart> {
                         (i) => FlSpot(i.toDouble(), _pricePoints[i]),
                   ),
                   isCurved: true,
-                  gradient: LinearGradient(
-                    colors: widget.isCallOption
-                        ? [Colors.blueAccent, Colors.lightBlueAccent]
-                        : [Colors.redAccent, Colors.orangeAccent],
-                  ),
+                  gradient: LinearGradient(colors: gradientColors),
                   barWidth: 3,
                   dotData: FlDotData(show: false),
                 ),

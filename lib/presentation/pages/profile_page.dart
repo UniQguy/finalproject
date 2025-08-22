@@ -1,241 +1,308 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../routes/app_routes.dart';
-import '../widgets/animated_gradient_widget.dart';
-import '../widgets/animated_in_view.dart';
-import '../widgets/app_glassy_card.dart';
-import '../widgets/gradient_text.dart';
-import '../widgets/neon_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+import '../widgets/app_glassy_card.dart';
+import '../widgets/animated_in_view.dart';
+
+/// Ultra-professional, dynamic, eye-catching ProfilePage with Edit option near avatar and polished Logout button.
+class ProfilePage extends StatefulWidget {
+  final String userEmail; // Logged-in user's email
+
+  const ProfilePage({super.key, required this.userEmail});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
+  late final TextEditingController _nameController;
+  late final AnimationController _fadeController;
+  late final Animation<double> _fadeAnimation;
+
+  // Mock user data (extendable)
+  final Map<String, String> accountDetails = {
+    'Joined': 'January 2023',
+    'Membership': 'Premium',
+    'Referral Code': 'ABCD1234',
+    'Phone': '+91 9876543210',
+    'Email Verified': 'Yes',
+    'Two-Factor Authentication': 'Enabled',
+  };
+
+  final Map<String, String> preferences = {
+    'Notifications': 'Enabled',
+    'Dark Mode': 'On',
+    'Language': 'English',
+    'Currency': 'INR',
+    'Time Zone': 'GMT+5:30',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: 'John Doe');
+
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut);
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _saveName() {
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Name updated to "${_nameController.text.trim()}"')),
+    );
+  }
+
+  void _logout() {
+    // Add your logout logic here, e.g., call AuthProvider.logout()
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Logged out successfully')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    const String userName = "John Doe";
-    const String userEmail = "john.doe@example.com";
-    final Color accent = Colors.tealAccent;
+    final double scale = MediaQuery.of(context).size.width / 900;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Gradient background
-          const AnimatedGradientWidget(),
-
-          // Floating sparkle particles
-          Positioned.fill(
-            child: IgnorePointer(
-              child: CustomPaint(painter: _ParticlePainter(accent: accent)),
-            ),
+      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: isDark ? Colors.grey[850]?.withOpacity(0.8) : Colors.grey[200]?.withOpacity(0.9),
+        centerTitle: true,
+        title: Text(
+          'Profile',
+          style: GoogleFonts.barlow(
+            color: isDark ? Colors.purpleAccent : Colors.deepPurple,
+            fontWeight: FontWeight.bold,
+            fontSize: 22 * scale,
+            letterSpacing: 1.4,
           ),
-
-          SafeArea(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              children: [
-                // Title
-                AnimatedInView(
-                  index: 0,
-                  child: GradientText(
-                    text: '👤 Profile',
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                    ),
-                    gradient: const LinearGradient(
-                      colors: [Colors.purpleAccent, Colors.tealAccent],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Avatar
-                AnimatedInView(
-                  index: 1,
-                  child: Hero(
-                    tag: "profile-avatar",
-                    child: AnimatedContainer(
-                      duration: const Duration(seconds: 2),
-                      curve: Curves.easeInOut,
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: SweepGradient(
-                          colors: [
-                            Colors.purpleAccent,
-                            Colors.tealAccent,
-                            Colors.purpleAccent,
-                          ],
-                          startAngle: 0.0,
-                          endAngle: pi * 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.purpleAccent.withOpacity(0.5),
-                            blurRadius: 16,
-                            spreadRadius: 2,
-                          )
-                        ],
-                      ),
-                      child: const CircleAvatar(
-                        radius: 55,
-                        backgroundImage: AssetImage('assets/profile.jpg'),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Name & Email
-                AnimatedInView(
-                  index: 2,
-                  child: Column(
+        ),
+        elevation: 0,
+        leading: Navigator.canPop(context)
+            ? BackButton(
+          color: isDark ? Colors.purpleAccent : Colors.deepPurple,
+          onPressed: () => Navigator.pop(context),
+        )
+            : null,
+      ),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 24 * scale, vertical: 26 * scale),
+          children: [
+            AnimatedInView(
+              index: 0,
+              child: Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomRight,
                     children: [
-                      Text(
-                        userName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      CircleAvatar(
+                        radius: 60 * scale,
+                        backgroundColor: isDark ? Colors.deepPurple.shade500 : Colors.deepPurple.shade300,
+                        backgroundImage: const AssetImage('lib/assets/images/profile_placeholder.png'),
+                        child: Semantics(label: 'User Avatar'),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        userEmail,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
+                      Positioned(
+                        bottom: 0,
+                        right: 4,
+                        child: GestureDetector(
+                          onTap: () {
+                            // Add image picker or edit profile picture logic
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Edit Avatar tapped')),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(6 * scale),
+                            decoration: BoxDecoration(
+                              color: isDark ? Colors.deepPurpleAccent : Colors.deepPurple,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? Colors.black : Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.camera_alt_outlined,
+                              size: 20 * scale,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
+                  SizedBox(height: 20 * scale),
+
+                  // Editable Name Field with Save Icon below the avatar
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 48 * scale),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _nameController,
+                            style: GoogleFonts.barlow(
+                              fontSize: 28 * scale,
+                              fontWeight: FontWeight.w900,
+                              color: isDark ? Colors.white : Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              border: UnderlineInputBorder(borderSide: BorderSide(color: isDark ? Colors.purpleAccent : Colors.deepPurple)),
+                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: isDark ? Colors.purpleAccent.withOpacity(0.7) : Colors.deepPurple.withOpacity(0.7))),
+                              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: isDark ? Colors.purpleAccent : Colors.deepPurple, width: 2)),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 6 * scale),
+                              hintText: 'Set up your name',
+                              hintStyle: GoogleFonts.barlow(
+                                fontSize: 20 * scale,
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.white38 : Colors.black38,
+                              ),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.check_circle_outline, color: isDark ? Colors.purpleAccent : Colors.deepPurple, size: 28 * scale),
+                          tooltip: 'Save Name',
+                          onPressed: _saveName,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 10 * scale),
+
+                  // Display Email (logged in)
+                  Text(
+                    widget.userEmail,
+                    style: GoogleFonts.barlow(
+                      fontSize: 14 * scale,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white70 : Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 38 * scale),
+
+            AnimatedInView(
+              index: 1,
+              child: AppGlassyCard(
+                borderRadius: BorderRadius.circular(20 * scale),
+                padding: EdgeInsets.symmetric(vertical: 22 * scale, horizontal: 28 * scale),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Account Details',
+                      style: GoogleFonts.barlow(
+                        fontSize: 20 * scale,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ...accountDetails.entries.map((entry) => _buildDetailRow(entry.key, entry.value, scale, isDark)).toList(),
+                  ],
                 ),
+              ),
+            ),
+            SizedBox(height: 36 * scale),
 
-                const SizedBox(height: 28),
-
-                // Security Settings → navigates to Account Settings
-                _buildOptionCard(
-                  context: context,
-                  index: 3,
-                  title: "Security",
-                  subtitle: "Manage passwords, 2FA, and device logins",
-                  icon: Icons.security,
-                  accent: accent,
-                  route: AppRoutes.accountSettings,
+            AnimatedInView(
+              index: 2,
+              child: AppGlassyCard(
+                borderRadius: BorderRadius.circular(20 * scale),
+                padding: EdgeInsets.symmetric(vertical: 22 * scale, horizontal: 28 * scale),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Preferences',
+                      style: GoogleFonts.barlow(
+                        fontSize: 20 * scale,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ...preferences.entries.map((entry) => _buildDetailRow(entry.key, entry.value, scale, isDark)).toList(),
+                  ],
                 ),
-                const SizedBox(height: 12),
+              ),
+            ),
 
-                // Notifications Settings
-                _buildOptionCard(
-                  context: context,
-                  index: 4,
-                  title: "Notifications",
-                  subtitle: "Customize alerts and push notifications",
-                  icon: Icons.notifications,
-                  accent: accent,
-                  route: AppRoutes.notificationSettings,
-                ),
-                const SizedBox(height: 12),
+            SizedBox(height: 50 * scale),
 
-                // General Settings
-                _buildOptionCard(
-                  context: context,
-                  index: 5,
-                  title: "General Settings",
-                  subtitle: "Theme, language, and app preferences",
-                  icon: Icons.settings,
-                  accent: accent,
-                  route: AppRoutes.appearanceSettings,
-                ),
-
-                const SizedBox(height: 40),
-
-                // Logout
-                AnimatedInView(
-                  index: 6,
-                  child: NeonButton(
-                    label: 'Logout',
-                    onPressed: () {
-                      // TODO: implement logout
-                    },
+            // Logout button centered with polished styling
+            Center(
+              child: OutlinedButton.icon(
+                onPressed: _logout,
+                icon: Icon(Icons.logout, color: Colors.redAccent, size: 22 * scale),
+                label: Text(
+                  'Logout',
+                  style: GoogleFonts.barlow(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18 * scale,
                     color: Colors.redAccent,
-                    textColor: Colors.white,
                   ),
                 ),
-              ],
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.redAccent, width: 2),
+                  padding: EdgeInsets.symmetric(horizontal: 36 * scale, vertical: 16 * scale),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  splashFactory: InkRipple.splashFactory,
+                ),
+              ),
+            ),
+            SizedBox(height: 20 * scale),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, double scale, bool isDark) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10 * scale),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.barlow(
+              fontWeight: FontWeight.w600,
+              fontSize: 16 * scale,
+              color: isDark ? Colors.white70 : Colors.black54,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.barlow(
+              fontWeight: FontWeight.bold,
+              fontSize: 16 * scale,
+              color: isDark ? Colors.white : Colors.black87,
             ),
           ),
         ],
       ),
     );
   }
-
-  Widget _buildOptionCard({
-    required BuildContext context,
-    required int index,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color accent,
-    required String route,
-  }) {
-    return AnimatedInView(
-      index: index,
-      child: GestureDetector(
-        onTap: () => context.push(route),
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 1.0, end: 1.0),
-          duration: const Duration(milliseconds: 200),
-          builder: (context, scale, child) {
-            return Transform.scale(
-              scale: scale,
-              child: AppGlassyCard(
-                borderColor: accent,
-                borderRadius: BorderRadius.circular(18),
-                child: ListTile(
-                  leading: Icon(icon, color: accent, size: 26),
-                  title: Text(
-                    title,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    subtitle,
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios,
-                      color: Colors.white54, size: 14),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-/// Particle background painter
-class _ParticlePainter extends CustomPainter {
-  final Color accent;
-  _ParticlePainter({required this.accent});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = accent.withOpacity(0.15)
-      ..style = PaintingStyle.fill;
-    final rnd = Random();
-    for (int i = 0; i < 25; i++) {
-      final dx = rnd.nextDouble() * size.width;
-      final dy = rnd.nextDouble() * size.height;
-      final radius = rnd.nextDouble() * 2 + 1;
-      canvas.drawCircle(Offset(dx, dy), radius, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

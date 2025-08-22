@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../widgets/animated_gradient_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../widgets/animated_in_view.dart';
 import '../widgets/app_glassy_card.dart';
-import '../widgets/gradient_text.dart';
-import '../../business_logic/providers/market_provider.dart';
-import '../../business_logic/models/stock.dart';
 
+/// A searchable page for stocks with animated results and neon UI styling.
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -17,176 +15,101 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String query = '';
 
+  // Sample stock data
+  final List<Map<String, dynamic>> allStocks = [
+    {'symbol': 'AAPL', 'name': 'Apple Inc.', 'price': 153.21},
+    {'symbol': 'TSLA', 'name': 'Tesla, Inc.', 'price': 710.55},
+    {'symbol': 'MSFT', 'name': 'Microsoft Corporation', 'price': 299.95},
+    {'symbol': 'GOOGL', 'name': 'Alphabet Inc.', 'price': 2703.44},
+    {'symbol': 'AMZN', 'name': 'Amazon.com, Inc.', 'price': 3349.20},
+  ];
+
+  List<Map<String, dynamic>> get filteredStocks {
+    if (query.isEmpty) return [];
+    return allStocks.where((stock) {
+      final lowerQuery = query.toLowerCase();
+      return stock['symbol'].toLowerCase().contains(lowerQuery) ||
+          stock['name'].toLowerCase().contains(lowerQuery);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final market = context.watch<MarketProvider>();
-
-    final List<Stock> results = query.isEmpty
-        ? []
-        : market.stocks
-        .where((stock) =>
-    stock.symbol.toLowerCase().contains(query.toLowerCase()) ||
-        stock.name.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+    final double scale = MediaQuery.of(context).size.width / 900;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const AnimatedGradientWidget(),
-          SafeArea(
-            child: Column(
-              children: [
-                // ░░ Header ░░
-                Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: TextField(
+          style: TextStyle(color: Colors.white, fontSize: 18 * scale),
+          cursorColor: Colors.purpleAccent,
+          decoration: InputDecoration(
+            hintText: 'Search stocks...',
+            hintStyle: TextStyle(color: Colors.white54),
+            filled: true,
+            fillColor: Colors.white10,
+            prefixIcon: Icon(Icons.search, color: Colors.purpleAccent),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 14 * scale,
+              horizontal: 20 * scale,
+            ),
+          ),
+          onChanged: (val) => setState(() => query = val),
+          autofocus: true,
+        ),
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(18 * scale),
+        children: filteredStocks.asMap().entries.map((entry) {
+          final index = entry.key;
+          final stock = entry.value;
+          return AnimatedInView(
+            index: index,
+            child: AppGlassyCard(
+              borderRadius: BorderRadius.circular(20 * scale),
+              padding: EdgeInsets.all(18 * scale),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: GradientText(
-                          text: '🔍 Search Stocks',
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w900),
-                          gradient: const LinearGradient(
-                            colors: [Colors.tealAccent, Colors.purpleAccent],
-                          ),
+                      Text(
+                        stock['symbol'],
+                        style: GoogleFonts.barlow(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18 * scale,
+                          color: Colors.white,
                         ),
                       ),
-                      IconButton(
-                        icon:
-                        const Icon(Icons.close, color: Colors.white70),
-                        onPressed: () => Navigator.pop(context),
+                      SizedBox(height: 6 * scale),
+                      Text(
+                        stock['name'],
+                        style: GoogleFonts.barlow(
+                          fontSize: 14 * scale,
+                          color: Colors.white60,
+                        ),
                       ),
                     ],
                   ),
-                ),
-
-                // ░░ Search field (glassy) ░░
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: AppGlassyCard(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
-                    borderRadius: BorderRadius.circular(14),
-                    borderColor: Colors.tealAccent,
-                    child: TextField(
-                      autofocus: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: "Type stock symbol or name...",
-                        hintStyle: TextStyle(color: Colors.white54),
-                        border: InputBorder.none,
-                        icon:
-                        Icon(Icons.search, color: Colors.tealAccent),
-                      ),
-                      onChanged: (val) => setState(() => query = val),
+                  Text(
+                    '₹${stock['price'].toStringAsFixed(2)}',
+                    style: GoogleFonts.barlow(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16 * scale,
+                      color: Colors.greenAccent,
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // ░░ Results list ░░
-                Expanded(
-                  child: results.isEmpty
-                      ? const Center(
-                    child: Text(
-                      "No results yet. Start typing to search.",
-                      style: TextStyle(color: Colors.white54),
-                    ),
-                  )
-                      : ListView.builder(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 16),
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: results.length,
-                    itemBuilder: (context, index) {
-                      final stock = results[index];
-                      final bool isUp =
-                          stock.price >= stock.previousClose;
-
-                      return AnimatedInView(
-                        index: index,
-                        child: Padding(
-                          padding:
-                          const EdgeInsets.only(bottom: 12.0),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(14),
-                            onTap: () {
-                              /// 👇 Return the selected stock to the previous page
-                              Navigator.pop(context, stock);
-                            },
-                            child: AppGlassyCard(
-                              padding: const EdgeInsets.all(14),
-                              borderColor: isUp
-                                  ? Colors.greenAccent
-                                  : Colors.redAccent,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          stock.symbol,
-                                          style: TextStyle(
-                                            color: isUp
-                                                ? Colors.greenAccent
-                                                : Colors.redAccent,
-                                            fontSize: 18,
-                                            fontWeight:
-                                            FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          stock.name,
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        '₹${stock.price.toStringAsFixed(2)}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight:
-                                          FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${isUp ? '+' : ''}${(stock.price - stock.previousClose).toStringAsFixed(2)}',
-                                        style: TextStyle(
-                                          color: isUp
-                                              ? Colors.greenAccent
-                                              : Colors.redAccent,
-                                          fontSize: 12,
-                                          fontWeight:
-                                          FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
