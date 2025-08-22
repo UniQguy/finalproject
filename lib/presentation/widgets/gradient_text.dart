@@ -18,7 +18,7 @@ class GradientText extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
 
-    // Default gradient uses the primaryColor as first color
+    // Default gradient uses app's primary color palette
     final defaultGradient = LinearGradient(
       colors: [
         themeProvider.primaryColor,
@@ -27,8 +27,9 @@ class GradientText extends StatelessWidget {
     );
 
     return ShaderMask(
-      shaderCallback: (bounds) => (gradient ?? defaultGradient)
-          .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => (gradient ?? defaultGradient).createShader(
+        Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+      ),
       blendMode: BlendMode.srcIn,
       child: Text(text, style: style),
     );

@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart'; // ✅ Required for Firebase initialization
+import 'package:firebase_core/firebase_core.dart';
 
 import 'app.dart';
+import 'firebase_options.dart';
+
+import 'business_logic/providers/auth_provider.dart';
 import 'business_logic/providers/market_provider.dart';
-import 'business_logic/providers/portfolio_provider.dart';
 import 'business_logic/providers/notification_provider.dart';
-import 'business_logic/providers/auth_provider.dart'; // ✅ Include AuthProvider for login/signup
-import 'business_logic/providers/theme_provider.dart'; // ✅ New: Theme Provider for dynamic theming
+import 'business_logic/providers/portfolio_provider.dart';
+import 'business_logic/providers/stock_provider.dart';
+import 'business_logic/providers/theme_provider.dart';
+import 'business_logic/providers/wallet_provider.dart';
+import 'business_logic/providers/watchlist_provider.dart';
 
-import 'firebase_options.dart'; // Firebase config
-
-import 'package:finalproject/routes/app_router.dart'; // Your app router with GoRouter setup
+// Your Finnhub API key
+const String finnhubApiKey = 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase with platform-specific options (required for Google Sign-In)
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -24,29 +26,16 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),       // For login/signup
-        ChangeNotifierProvider(create: (_) => MarketProvider()),     // Market data
-        ChangeNotifierProvider(create: (_) => PortfolioProvider()),  // Portfolio holdings and trades
-        ChangeNotifierProvider(create: (_) => NotificationProvider()), // Notifications
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),      // Dynamic theming
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MarketProvider(apiKey: finnhubApiKey)),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => PortfolioProvider()),
+        ChangeNotifierProvider(create: (_) => StockProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => WalletProvider()),
+        ChangeNotifierProvider(create: (_) => WatchlistProvider()),
       ],
-      child: const RootApp(),
+      child: const DemoApp(),
     ),
   );
-}
-
-class RootApp extends StatelessWidget {
-  const RootApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Premium Trading App',
-      theme: themeProvider.themeData, // Pulls theme from ThemeProvider
-      routerConfig: AppRouter.router, // Connects your GoRouter config
-    );
-  }
 }

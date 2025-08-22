@@ -9,12 +9,12 @@ class AccountSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = Colors.tealAccent;
+    const themeColor = Colors.tealAccent;
 
     return Scaffold(
       body: Stack(
         children: [
-          // Subtle moving gradient background
+          // Subtle animated gradient background for a dynamic feel
           const AnimatedGradientWidget(),
           SafeArea(
             child: ListView(
@@ -26,31 +26,33 @@ class AccountSettingsPage extends StatelessWidget {
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
                   ),
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [themeColor, Colors.purpleAccent],
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Change Email
+                // Change Email tile
                 _settingTile(
                   context,
                   index: 0,
                   title: 'Change Email',
                   icon: Icons.email_outlined,
                   borderColor: themeColor,
-                  onTap: () {},
+                  onTap: () {
+                    // TODO: Implement email change navigation or dialog
+                  },
                 ),
                 const SizedBox(height: 16),
-
-                // Change Password
+                // Change Password tile
                 _settingTile(
                   context,
                   index: 1,
                   title: 'Change Password',
                   icon: Icons.lock_outline,
                   borderColor: themeColor,
-                  onTap: () {},
+                  onTap: () {
+                    // TODO: Implement password change navigation or dialog
+                  },
                 ),
               ],
             ),
@@ -60,12 +62,14 @@ class AccountSettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _settingTile(BuildContext context,
-      {required int index,
+  Widget _settingTile(
+      BuildContext context, {
+        required int index,
         required String title,
         required IconData icon,
         required Color borderColor,
-        required VoidCallback onTap}) {
+        required VoidCallback onTap,
+      }) {
     return AnimatedInView(
       index: index,
       child: GestureDetector(
@@ -79,7 +83,7 @@ class AccountSettingsPage extends StatelessWidget {
               child: AppGlassyCard(
                 borderColor: borderColor,
                 borderRadius: BorderRadius.circular(20),
-                padding: const EdgeInsets.all(0),
+                padding: EdgeInsets.zero,
                 child: ListTile(
                   leading: Icon(icon, color: borderColor, size: 26),
                   title: Text(

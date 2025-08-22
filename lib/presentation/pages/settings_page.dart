@@ -1,104 +1,133 @@
-import 'package:finalproject/presentation/pages/account_settings_page.dart';
-import 'package:finalproject/presentation/pages/appearance_settings_page.dart';
-import 'package:finalproject/presentation/pages/notification_settings_page.dart';
 import 'package:flutter/material.dart';
-import '../widgets/animated_gradient_widget.dart';
-import '../widgets/animated_in_view.dart';
-import '../widgets/app_glassy_card.dart';
-import '../widgets/gradient_text.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import '../widgets/app_glassy_card.dart';
+import '../widgets/animated_in_view.dart';
+
+/// Settings page with grouped account and app preference sections, plus logout action.
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final double scale = MediaQuery.of(context).size.width / 900;
+
     return Scaffold(
-      body: Stack(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text(
+          'Settings',
+          style: GoogleFonts.barlow(
+            color: Colors.purpleAccent,
+            fontWeight: FontWeight.bold,
+            fontSize: 22 * scale,
+            letterSpacing: 1.3,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: ListView(
+        padding: EdgeInsets.all(18 * scale),
         children: [
-          const AnimatedGradientWidget(),
-          SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              physics: const BouncingScrollPhysics(),
-              children: [
-                GradientText(
-                  text: '⚙ Settings',
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
+          AnimatedInView(
+            index: 0,
+            child: AppGlassyCard(
+              borderRadius: BorderRadius.circular(20 * scale),
+              padding: EdgeInsets.symmetric(vertical: 20 * scale, horizontal: 28 * scale),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Account Settings',
+                    style: GoogleFonts.barlow(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18 * scale,
+                      color: Colors.white,
+                    ),
                   ),
-                  gradient: const LinearGradient(
-                    colors: [Colors.purpleAccent, Colors.tealAccent],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _settingsItem(
-                  context,
-                  0,
-                  icon: Icons.person,
-                  title: 'Account',
-                  subtitle: 'Manage your account details',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AccountSettingsPage()),
-                    );
-                  },
-                ),
-                _settingsItem(
-                  context,
-                  1,
-                  icon: Icons.palette,
-                  title: 'Appearance',
-                  subtitle: 'Theme & display settings',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AppearanceSettingsPage()),
-                    );
-                  },
-                ),
-                _settingsItem(
-                  context,
-                  2,
-                  icon: Icons.notifications,
-                  title: 'Notifications',
-                  subtitle: 'Alerts & push notifications',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const NotificationSettingsPage()),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  _buildSettingRow(context, 'Profile', '/profile', scale),
+                  _buildSettingRow(context, 'Security', '/settings/security', scale),
+                  _buildSettingRow(context, 'Notifications', '/settings/notifications', scale),
+                ],
+              ),
             ),
           ),
+          SizedBox(height: 28 * scale),
+          AnimatedInView(
+            index: 1,
+            child: AppGlassyCard(
+              borderRadius: BorderRadius.circular(20 * scale),
+              padding: EdgeInsets.symmetric(vertical: 20 * scale, horizontal: 28 * scale),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'App Preferences',
+                    style: GoogleFonts.barlow(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18 * scale,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildSettingRow(context, 'Appearance', '/settings/appearance', scale),
+                  _buildSettingRow(context, 'Language', '/settings/language', scale),
+                  _buildSettingRow(context, 'Data & Privacy', '/settings/privacy', scale),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 28 * scale),
+          AnimatedInView(
+            index: 2,
+            child: AppGlassyCard(
+              borderRadius: BorderRadius.circular(20 * scale),
+              padding: EdgeInsets.symmetric(vertical: 20 * scale, horizontal: 28 * scale),
+              child: GestureDetector(
+                onTap: () {
+                  // TODO: Trigger logout functionality
+                },
+                child: Center(
+                  child: Text(
+                    'Log Out',
+                    style: GoogleFonts.barlow(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20 * scale,
+                      color: Colors.redAccent,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 40 * scale),
         ],
       ),
     );
   }
 
-  Widget _settingsItem(BuildContext context, int index,
-      {required IconData icon,
-        required String title,
-        required String subtitle,
-        required VoidCallback onTap}) {
-    return AnimatedInView(
-      index: index,
+  Widget _buildSettingRow(BuildContext context, String title, String route, double scale) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(route),
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 12.0),
-        child: AppGlassyCard(
-          borderColor: Colors.tealAccent, // ✅ required parameter added
-          child: ListTile(
-            leading: Icon(icon, color: Colors.tealAccent),
-            title: Text(title, style: const TextStyle(color: Colors.white)),
-            subtitle: Text(subtitle,
-                style: const TextStyle(color: Colors.white54, fontSize: 12)),
-            trailing: const Icon(Icons.arrow_forward_ios,
-                color: Colors.white54, size: 14),
-            onTap: onTap,
-          ),
+        padding: EdgeInsets.symmetric(vertical: 14 * scale),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.barlow(
+                fontSize: 18 * scale,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.purpleAccent),
+          ],
         ),
       ),
     );

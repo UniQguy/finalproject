@@ -4,6 +4,7 @@ import '../widgets/app_glassy_card.dart';
 import '../widgets/gradient_text.dart';
 import '../widgets/animated_in_view.dart';
 
+/// A page displaying a palette of accent colors allowing the user to pick one.
 class ColorPickerPage extends StatelessWidget {
   final ValueChanged<Color> onColorSelected;
   final Color currentColor;
@@ -16,7 +17,7 @@ class ColorPickerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A curated palette of accent colors
+    // Curated palette of vibrant neon accent colors
     final List<Color> colors = [
       Colors.tealAccent,
       Colors.purpleAccent,
@@ -32,18 +33,20 @@ class ColorPickerPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // Animated neon background gradient for lively visual appeal
           const AnimatedGradientWidget(),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                   child: GradientText(
                     text: '🎨 Pick Accent Color',
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                     gradient: const LinearGradient(
                       colors: [Colors.purpleAccent, Colors.tealAccent],
                     ),
@@ -53,8 +56,7 @@ class ColorPickerPage extends StatelessWidget {
                   child: GridView.builder(
                     padding: const EdgeInsets.all(16),
                     physics: const BouncingScrollPhysics(),
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
                       crossAxisSpacing: 14,
                       mainAxisSpacing: 14,
@@ -63,6 +65,7 @@ class ColorPickerPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final color = colors[index];
                       final bool isSelected = color == currentColor;
+
                       return AnimatedInView(
                         index: index,
                         child: GestureDetector(
@@ -73,27 +76,22 @@ class ColorPickerPage extends StatelessWidget {
                           child: AppGlassyCard(
                             borderRadius: BorderRadius.circular(50),
                             padding: EdgeInsets.zero,
-                            borderColor: Colors.transparent, // Required parameter added
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                width: 2,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: color.withOpacity(0.6),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                )
-                              ],
-                            ),
+                            borderColor: Colors.transparent,
                             child: Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: color,
+                                border: Border.all(
+                                  color: isSelected ? Colors.white : Colors.transparent,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: color.withOpacity(0.6),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                  )
+                                ],
                               ),
                             ),
                           ),
@@ -101,7 +99,7 @@ class ColorPickerPage extends StatelessWidget {
                       );
                     },
                   ),
-                )
+                ),
               ],
             ),
           ),

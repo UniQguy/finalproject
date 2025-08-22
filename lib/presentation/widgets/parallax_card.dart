@@ -18,7 +18,7 @@ class _ParallaxCardState extends State<ParallaxCard> {
   double _tiltX = 0;
   double _tiltY = 0;
 
-  // Called on mouse hover or finger drag with local offset
+  // Update tilt angles based on pointer position relative to center
   void _updateTilt(Offset localPosition, Size size) {
     final centerX = size.width / 2;
     final centerY = size.height / 2;
@@ -66,7 +66,7 @@ class _ParallaxCardState extends State<ParallaxCard> {
         child: Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.001) // perspective
+            ..setEntry(3, 2, 0.001) // perspective depth
             ..rotateX(_tiltX)
             ..rotateY(_tiltY),
           child: widget.child,

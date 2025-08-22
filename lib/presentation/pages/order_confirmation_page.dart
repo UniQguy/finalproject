@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../business_logic/models/stock.dart';
 
+/// Displays confirmation details for a placed order, highlighting order type with neon colors.
 class OrderConfirmationPage extends StatelessWidget {
   final Stock stock;
   final int quantity;

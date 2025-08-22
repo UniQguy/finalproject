@@ -35,10 +35,14 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    // Sample data points simulating live data
-    spots = List.generate(30, (index) {
-      return FlSpot(index.toDouble(), 50 + 10 * sin(index * pi / 15));
-    });
+    // Generate smooth oscillating sample data points simulating live data
+    spots = List.generate(
+      30,
+          (index) => FlSpot(
+        index.toDouble(),
+        50 + 10 * sin(index * pi / 15),
+      ),
+    );
   }
 
   @override
@@ -66,49 +70,67 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (_, __) {
-        return SizedBox(
-          height: 180,
-          child: LineChart(
-            LineChartData(
-              minX: 0,
-              maxX: spots.length - 1.toDouble(),
-              minY: 30,
-              maxY: 90,
-              lineTouchData: LineTouchData(
-                enabled: true,
-                handleBuiltInTouches: true,
-                // Do not specify touchTooltipData if unsupported
-              ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: spots,
-                  isCurved: true,
-                  preventCurveOverShooting: true,
-                  barWidth: 4,
-                  isStrokeCapRound: true,
-                  color: glowColor,
-                  gradient: _glowGradient(_animationController.value),
-                  belowBarData: BarAreaData(
-                    show: true,
-                    gradient: _glowGradient(_animationController.value),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedBuilder(
+          animation: _animationController,
+          builder: (_, __) {
+            return SizedBox(
+              height: 180,
+              child: LineChart(
+                LineChartData(
+                  minX: 0,
+                  maxX: spots.length - 1.toDouble(),
+                  minY: 30,
+                  maxY: 90,
+                  lineTouchData: LineTouchData(
+                    enabled: true,
+                    handleBuiltInTouches: true,
                   ),
-                  dotData: FlDotData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      isCurved: true,
+                      barWidth: 4,
+                      isStrokeCapRound: true,
+                      color: glowColor,
+                      gradient: _glowGradient(_animationController.value),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: _glowGradient(_animationController.value),
+                      ),
+                      dotData: FlDotData(show: false),
+                    ),
+                  ],
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: 10,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.white.withOpacity(0.1),
+                        strokeWidth: 1,
+                      );
+                    },
+                  ),
+                  borderData: FlBorderData(show: false),
+                  titlesData: FlTitlesData(show: false),
                 ),
-              ],
-              gridData: FlGridData(
-                show: true,
-                drawVerticalLine: false,
-                horizontalInterval: 10,
               ),
-              borderData: FlBorderData(show: false),
-              titlesData: FlTitlesData(show: false),
-            ),
+            );
+          },
+        ),
+        Text(
+          'HERE IS AnimatedRealtimeChart',
+          style: TextStyle(
+            fontSize: 22,
+            color: glowColor.withOpacity(0.3),
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }

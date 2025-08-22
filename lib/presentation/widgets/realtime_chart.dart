@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-import '../widgets/animated_wrappers.dart'; // AnimatedInView + AppGlassyCard
+import '../widgets/animated_in_view.dart';
+import '../widgets/app_glassy_card.dart';
 import '../../business_logic/providers/market_provider.dart';
 import '../../business_logic/models/stock.dart';
 
@@ -19,17 +20,21 @@ class RealtimeChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final marketProvider = context.watch<MarketProvider>();
+
     final stock = marketProvider.stocks.firstWhere(
           (s) => s.symbol == stockSymbol,
       orElse: () => Stock(
         symbol: stockSymbol,
-        name: '',
+        company: '',
         price: 0,
         previousClose: 0,
+        recentPrices: [],
       ),
     );
 
-    if (stock.recentPrices.isEmpty) {
+    final recentPrices = stock.recentPrices;
+
+    if (recentPrices.isEmpty) {
       return const SizedBox(
         height: 180,
         child: Center(
@@ -41,19 +46,20 @@ class RealtimeChart extends StatelessWidget {
       );
     }
 
-    final spots = <FlSpot>[];
-    for (int i = 0; i < stock.recentPrices.length; i++) {
-      spots.add(FlSpot(i.toDouble(), stock.recentPrices[i]));
-    }
+    final spots = List<FlSpot>.generate(
+      recentPrices.length,
+          (index) => FlSpot(index.toDouble(), recentPrices[index]),
+    );
 
-    final minPrice = stock.recentPrices.reduce((a, b) => a < b ? a : b);
-    final maxPrice = stock.recentPrices.reduce((a, b) => a > b ? a : b);
+    final minPrice = recentPrices.reduce((a, b) => a < b ? a : b);
+    final maxPrice = recentPrices.reduce((a, b) => a > b ? a : b);
 
     final gradientColors = isCallOption
         ? [Colors.blueAccent, Colors.lightBlueAccent]
         : [Colors.redAccent, Colors.orangeAccent];
 
     return AnimatedInView(
+      index: 0,
       child: AppGlassyCard(
         padding: const EdgeInsets.all(16),
         child: SizedBox(
@@ -89,7 +95,6 @@ class RealtimeChart extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-
               Expanded(
                 child: LineChart(
                   LineChartData(
@@ -109,9 +114,8 @@ class RealtimeChart extends StatelessWidget {
                     lineTouchData: LineTouchData(
                       enabled: true,
                       touchTooltipData: LineTouchTooltipData(
-                        // Remove tooltipBgColor and tooltipStyle entirely!
-                        getTooltipItems: (touchedSpots) {
-                          return touchedSpots.map((spot) {
+                        getTooltipItems: (spots) {
+                          return spots.map((spot) {
                             return LineTooltipItem(
                               "₹${spot.y.toStringAsFixed(2)}",
                               const TextStyle(

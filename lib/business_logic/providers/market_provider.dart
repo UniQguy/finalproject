@@ -1,55 +1,77 @@
 import 'dart:async';
-import 'dart:math';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/stock.dart';
+import '../services/api_service.dart';
 
+/// Provides stock market data fetching and state management.
+/// Periodically fetches stock prices and tracks previous values for change calculation.
 class MarketProvider extends ChangeNotifier {
-  final Random _rng = Random();
+  final ApiService _apiService;
 
-  /// Initial mock data — replace with API data if needed
-  List<Stock> stocks = [
-    Stock(symbol: 'AAPL', name: 'Apple Inc.', price: 150.0, previousClose: 148.0),
-    Stock(symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2800.0, previousClose: 2750.0),
-    Stock(symbol: 'AMZN', name: 'Amazon.com Inc.', price: 3300.0, previousClose: 3250.0),
-    Stock(symbol: 'TSLA', name: 'Tesla Inc.', price: 700.0, previousClose: 690.0),
-    Stock(symbol: 'MSFT', name: 'Microsoft Corp.', price: 300.0, previousClose: 295.0),
-  ];
+  List<Stock> _stocks = [];
+  final Map<String, double> _previousPrices = {};
 
-  Timer? _priceTimer;
+  /// Immutable list of fetched stocks.
+  List<Stock> get stocks => List.unmodifiable(_stocks);
 
-  MarketProvider() {
-    _startMockPriceStream();
+  MarketProvider({required String apiKey}) : _apiService = ApiService(apiKey: apiKey);
+
+  Timer? _timer;
+
+  /// Starts periodic fetching of stock data for the given symbols every 5 seconds.
+  void startFetchingStocks(List<String> symbols) {
+    _fetchStocks(symbols);
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 5), (_) => _fetchStocks(symbols));
   }
 
-  /// Simulates live price updates — swap this with an API integration later
-  void _startMockPriceStream() {
-    _priceTimer?.cancel();
-    _priceTimer = Timer.periodic(const Duration(seconds: 2), (_) {
-      for (var stock in stocks) {
-        // Random small change ± ~1%
-        final changePercent = (_rng.nextDouble() - 0.5) / 50;
-        final newPrice = ((stock.price * (1 + changePercent))
-            .clamp(1, double.infinity))
-            .toDouble(); // ensure double type
+  /// Fetches latest stock data from API and updates internal state.
+  Future<void> _fetchStocks(List<String> symbols) async {
+    try {
+      final fetchedStocks = await _apiService.fetchStocks(symbols);
 
-        stock.updatePrice(newPrice);
+      // Initialize previous price if not set for new stocks.
+      for (var stock in fetchedStocks) {
+        _previousPrices.putIfAbsent(stock.symbol, () => stock.price);
       }
+
+      _stocks = fetchedStocks;
       notifyListeners();
-    });
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching stocks: $e');
+      debugPrint('$stackTrace');
+      // Optional: Implement retry logic or user notification here.
+    }
   }
 
-  /// Manual update if pulling from an API
-  void updateStockPrice(String symbol, double newPrice) {
-    final idx = stocks.indexWhere((s) => s.symbol == symbol);
-    if (idx >= 0) {
-      stocks[idx].updatePrice(newPrice);
-      notifyListeners();
+  /// Returns the stored previous price for a stock symbol if available.
+  double? previousPrice(String symbol) => _previousPrices[symbol];
+
+  /// Calculates the price change percentage compared to the previous cached price.
+  /// Returns 0.0 if no valid data available.
+  double getPriceChangePercent(String symbol) {
+    final currentStock = _stocks.firstWhere(
+          (stock) => stock.symbol == symbol,
+      orElse: () => Stock(
+        symbol: symbol,
+        company: '',
+        price: 0,
+        previousClose: 0,
+        recentPrices: [],
+      ),
+    );
+    final prevPrice = _previousPrices[symbol];
+
+    if (currentStock.price == 0 || prevPrice == null || prevPrice == 0) {
+      return 0.0;
     }
+
+    return ((currentStock.price - prevPrice) / prevPrice) * 100;
   }
 
   @override
   void dispose() {
-    _priceTimer?.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 }

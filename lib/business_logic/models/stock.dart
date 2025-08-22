@@ -1,30 +1,60 @@
 class Stock {
   final String symbol;
-  final String name;
-  final String? description;
+  final String company;
   double price;
-  double previousClose;
-  bool isUp;
-  List<double> recentPrices;
+  final double previousClose;
+  final List<double> recentPrices;
 
   Stock({
     required this.symbol,
-    required this.name,
+    required this.company,
     required this.price,
     required this.previousClose,
-    this.description,
-  })  : isUp = price >= previousClose,
-        recentPrices = [price];
+    required this.recentPrices,
+  });
 
-  /// Updates the stock's current price and keeps track of recent prices
-  void updatePrice(double newPrice) {
-    isUp = newPrice >= price;
-    price = newPrice;
-    recentPrices.add(newPrice);
+  /// Creates a [Stock] instance from a JSON map.
+  factory Stock.fromJson(Map<String, dynamic> json) {
+    return Stock(
+      symbol: json['symbol'] as String,
+      company: json['company'] as String,
+      price: (json['price'] as num).toDouble(),
+      previousClose: (json['previousClose'] as num?)?.toDouble() ?? 0,
+      recentPrices: (json['recentPrices'] as List<dynamic>?)
+          ?.map((e) => (e as num).toDouble())
+          .toList() ??
+          <double>[],
+    );
+  }
 
-    // Limit history to last 30 values for performance/sparklines
-    if (recentPrices.length > 30) {
-      recentPrices.removeAt(0);
-    }
+  /// Converts this [Stock] instance to a JSON map.
+  Map<String, dynamic> toJson() => {
+    'symbol': symbol,
+    'company': company,
+    'price': price,
+    'previousClose': previousClose,
+    'recentPrices': recentPrices,
+  };
+
+  /// Returns a copy of this [Stock] with optionally updated fields.
+  Stock copyWith({
+    String? symbol,
+    String? company,
+    double? price,
+    double? previousClose,
+    List<double>? recentPrices,
+  }) {
+    return Stock(
+      symbol: symbol ?? this.symbol,
+      company: company ?? this.company,
+      price: price ?? this.price,
+      previousClose: previousClose ?? this.previousClose,
+      recentPrices: recentPrices ?? this.recentPrices,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Stock(symbol: $symbol, company: $company, price: $price, previousClose: $previousClose, recentPrices: $recentPrices)';
   }
 }

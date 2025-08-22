@@ -1,166 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../widgets/animated_gradient_widget.dart';
-import '../widgets/animated_in_view.dart';
-import '../widgets/app_glassy_card.dart';
-import '../widgets/gradient_text.dart';
-import '../widgets/neon_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../business_logic/providers/portfolio_provider.dart';
-import '../../business_logic/providers/theme_provider.dart';
 import '../../business_logic/models/trade_order.dart';
 
+/// Displays the user’s portfolio including holdings, total value, and clear action.
 class PortfolioPage extends StatelessWidget {
   const PortfolioPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final portfolio = context.watch<PortfolioProvider>();
-    final themeProvider = context.watch<ThemeProvider>();
+    final portfolioProvider = context.watch<PortfolioProvider>();
+    final holdings = portfolioProvider.holdings.values.toList();
+    final totalValue = portfolioProvider.portfolioValue;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const AnimatedGradientWidget(),
-          SafeArea(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              children: [
-                GradientText(
-                  text: 'Your Portfolio',
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                  ),
-                  gradient: LinearGradient(
-                    colors: [themeProvider.primaryColor, Colors.purpleAccent],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Total Portfolio Value
-                AnimatedInView(
-                  index: 0,
-                  child: AppGlassyCard(
-                    borderColor: themeProvider
-                        .primaryColor, // ✅ required parameter added
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Total Value',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          '₹${portfolio.portfolioValue.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Holdings List
-                if (portfolio.holdings.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(
-                        "You don't have any holdings yet.",
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                    ),
-                  )
-                else
-                  ...portfolio.holdings.entries.toList().asMap().entries.map(
-                        (mapEntry) {
-                      final index = mapEntry.key;
-                      final TradeOrder order = mapEntry.value.value;
-                      final symbol = order.stockSymbol;
-                      final qty = order.quantity;
-                      final stockPrice = order.price;
-
-                      final color = themeProvider.primaryColor;
-
-                      return AnimatedInView(
-                        index: index + 1,
-                        child: AppGlassyCard(
-                          padding: const EdgeInsets.all(12),
-                          borderColor: themeProvider
-                              .primaryColor, // ✅ required parameter added
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                symbol,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    '₹${stockPrice.toStringAsFixed(2)}',
-                                    style: TextStyle(
-                                      color: color,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Qty: $qty',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-
-                const SizedBox(height: 30),
-
-                // Add Funds / Trade Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    NeonButton(
-                      label: 'Add Funds',
-                      onPressed: () {
-                        // handle add funds
-                      },
-                      color: themeProvider.gainColor,
-                      textColor: Colors.black,
-                    ),
-                    NeonButton(
-                      label: 'Trade Now',
-                      onPressed: () {
-                        // navigate to trade page
-                      },
-                      color: themeProvider.primaryColor,
-                      textColor: Colors.black,
-                    ),
-                  ],
-                ),
-              ],
+      appBar: AppBar(
+        title: Text(
+          'My Portfolio',
+          style: GoogleFonts.barlow(
+            fontWeight: FontWeight.bold,
+            color: Colors.purpleAccent,
+          ),
+        ),
+        backgroundColor: Colors.black,
+        elevation: 0,
+      ),
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: holdings.isEmpty
+            ? Center(
+          child: Text(
+            'No holdings yet.',
+            style: GoogleFonts.barlow(
+              color: Colors.white70,
+              fontSize: 18,
             ),
+          ),
+        )
+            : Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Total Value: ₹${totalValue.toStringAsFixed(2)}',
+              style: GoogleFonts.barlow(
+                color: Colors.purpleAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.separated(
+                itemCount: holdings.length,
+                separatorBuilder: (_, __) => const Divider(color: Colors.white24),
+                itemBuilder: (context, index) {
+                  final TradeOrder order = holdings[index];
+                  return _PortfolioItem(order: order);
+                },
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purpleAccent,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                textStyle: GoogleFonts.barlow(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () => portfolioProvider.clearPortfolio(),
+              child: const Text('Clear Portfolio'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PortfolioItem extends StatelessWidget {
+  final TradeOrder order;
+
+  const _PortfolioItem({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final portfolioProvider = context.read<PortfolioProvider>();
+    final holdingValue = order.price * order.quantity;
+
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      title: Text(
+        order.stockSymbol,
+        style: GoogleFonts.barlow(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.white,
+        ),
+      ),
+      subtitle: Text(
+        'Quantity: ${order.quantity} | Type: ${order.type}',
+        style: GoogleFonts.barlow(color: Colors.white70),
+      ),
+      trailing: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '₹${holdingValue.toStringAsFixed(2)}',
+            style: GoogleFonts.barlow(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.purpleAccent,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.redAccent),
+            onPressed: () => portfolioProvider.removeHolding(order.stockSymbol),
+            tooltip: 'Remove ${order.stockSymbol} from portfolio',
           ),
         ],
       ),

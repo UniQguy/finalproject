@@ -1,565 +1,316 @@
-// lib/presentation/pages/home_page.dart
-import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../business_logic/models/stock.dart';
-import '../../business_logic/providers/market_provider.dart';
-import '../../business_logic/providers/portfolio_provider.dart';
 import '../../business_logic/providers/theme_provider.dart';
-import '../../routes/app_routes.dart';
 
-// =============================================================
-//                      HOME PAGE
-// =============================================================
+import '../widgets/animated_gradient_widget.dart';
+import '../widgets/animated_in_view.dart';
+import '../widgets/section_header.dart';
+
+import 'balance_card.dart';
+import 'compact_news_section.dart';
+import 'compact_watchlist_section.dart';
+import 'filter_chips.dart';
+import 'market_tabs.dart';
+import 'stock_chart_section.dart';
+import 'stock_comparison_section.dart';
+import 'trending_section.dart';
+import '../widgets/wallet_balance_card.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  // Futuristic dynamic gradient sets
-  final List<List<Color>> _gradients = [
-    [const Color(0xFF071A2F), const Color(0xFF0B3D91), const Color(0xFF000000)],
-    [const Color(0xFF120E43), const Color(0xFF0D7377), const Color(0xFF000000)],
-    [const Color(0xFF0F0C29), const Color(0xFF302B63), const Color(0xFF24243E)],
-  ];
-  int _currentGradientIndex = 0;
-  Timer? _bgTimer;
-
-  late AnimationController _controller;
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  int _selectedIndex = 0;
+  late final AnimationController _heroAnimationController;
+  late final Animation<double> _heroImageFade;
 
   @override
   void initState() {
     super.initState();
-    // Auto change background every 6s
-    _bgTimer = Timer.periodic(const Duration(seconds: 6), (_) {
-      setState(() {
-        _currentGradientIndex =
-            (_currentGradientIndex + 1) % _gradients.length;
-      });
-    });
-
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(seconds: 6))
-      ..repeat(reverse: true);
+    _heroAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _heroImageFade = CurvedAnimation(parent: _heroAnimationController, curve: Curves.easeIn);
+    _heroAnimationController.forward();
   }
 
   @override
   void dispose() {
-    _bgTimer?.cancel();
-    _controller.dispose();
+    _heroAnimationController.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final market = context.watch<MarketProvider>();
-    final portfolio = context.watch<PortfolioProvider>();
-
-    // Calculate portfolio performance dynamically
-    double startVal = 0.0, currentVal = 0.0;
-    for (var entry in portfolio.holdings.entries) {
-      final symbol = entry.key;
-      final order = entry.value;
-      final stock = market.stocks.firstWhere(
-            (s) => s.symbol == symbol,
-        orElse: () => Stock(
-          symbol: symbol,
-          name: symbol,
-          price: order.price,
-          previousClose: order.price,
-        ),
-      );
-      if (stock.recentPrices.isNotEmpty) {
-        startVal += stock.recentPrices.first * order.quantity;
-        currentVal += stock.price * order.quantity;
-      }
+  void _onNavTap(int index) {
+    if (!mounted) return;
+    setState(() => _selectedIndex = index);
+    switch (index) {
+      case 0:
+        context.go('/notifications');
+        break;
+      case 1:
+        context.go('/settings');
+        break;
+      case 2:
+        context.go('/profile');
+        break;
     }
-    final changePct =
-    startVal > 0 ? ((currentVal - startVal) / startVal) * 100 : 0.0;
+  }
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        automaticallyImplyLeading: GoRouter.of(context).canPop(),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        titleSpacing: 0,
-        title: Text(
-          'Dashboard',
-          style: GoogleFonts.orbitron(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+  Widget _buildHeroSection(double scale, Color primaryColor) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [primaryColor.withOpacity(0.9), primaryColor.withOpacity(0.62)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.search, color: Colors.tealAccent),
-              onPressed: () => context.push(AppRoutes.search)),
-          IconButton(
-              icon: const Icon(Icons.notifications_none,
-                  color: Colors.tealAccent),
-              onPressed: () => context.push(AppRoutes.notifications)),
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.tealAccent),
-            onPressed: () => context.push(AppRoutes.settings),
+      ),
+      padding: EdgeInsets.all(28 * scale),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Trade with Confidence',
+                  style: GoogleFonts.barlow(
+                    fontSize: 32 * scale,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 12 * scale),
+                Text(
+                  'Experience real-time market data and paper trading with zero risk.',
+                  style: GoogleFonts.barlow(
+                    fontSize: 16 * scale,
+                    color: Colors.white70,
+                  ),
+                ),
+                SizedBox(height: 24 * scale),
+                ElevatedButton(
+                  onPressed: () => context.go('/signup'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: primaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 24 * scale, vertical: 14 * scale),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 8,
+                  ),
+                  child: Text(
+                    'Start Trading Now',
+                    style: GoogleFonts.barlow(
+                      fontSize: 18 * scale,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 20 * scale),
+          Expanded(
+            flex: 5,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.asset(
+                'lib/assets/images/logo_.png',
+                fit: BoxFit.cover,
+                height: 160 * scale,
+              ),
+            ),
           ),
         ],
       ),
-      body: AnimatedContainer(
-        duration: const Duration(seconds: 2),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: _gradients[_currentGradientIndex],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [
-              Colors.white.withOpacity(0.05),
-              Colors.white.withOpacity(0.1)
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            tileMode: TileMode.mirror,
-          ).createShader(bounds),
-          blendMode: BlendMode.plus,
-          child: ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, kToolbarHeight + 20, 16, 20),
-            children: [
-              HeroChartCard(animationController: _controller, market: market),
-              const SizedBox(height: 20),
-              MarketTicker(items: market.stocks
-                  .map((s) =>
-              "${s.symbol} ₹${s.price.toStringAsFixed(2)} ${s.isUp ? '▲' : '▼'}")
-                  .toList()),
-              const SizedBox(height: 20),
-              PortfolioSection(
-                  value: currentVal, changePct: changePct, animated: true),
-              const SizedBox(height: 24),
-              SectionHeader(
-                  title: 'Market Movers',
-                  onViewAll: () => context.push(AppRoutes.marketMovers)),
-              const SizedBox(height: 10),
-              MarketMoversHorizontal(stocks: market.stocks.take(8).toList()),
-              const SizedBox(height: 24),
-              SectionHeader(
-                  title: 'Recent Trades',
-                  onViewAll: () => context.push(AppRoutes.tradingHistory)),
-              const SizedBox(height: 10),
-              RecentTradesTicker(),
-              const SizedBox(height: 24),
-              SectionHeader(
-                  title: 'Latest News',
-                  onViewAll: () => context.push(AppRoutes.news)),
-              const SizedBox(height: 10),
-              NewsCarousel(),
-              const SizedBox(height: 24),
-              SectionHeader(title: 'Quick Actions', onViewAll: () {}),
-              const SizedBox(height: 10),
-              QuickActionsRow(),
-            ],
-          ),
-        ),
-      ),
     );
   }
-}
-
-// =============================================================
-//                  HERO CHART CARD (Dynamic Data)
-// =============================================================
-class HeroChartCard extends StatelessWidget {
-  final AnimationController animationController;
-  final MarketProvider market;
-  const HeroChartCard(
-      {super.key, required this.animationController, required this.market});
 
   @override
   Widget build(BuildContext context) {
-    final List<FlSpot> spots = [];
-    final random = Random();
-    double base = 1000;
-    for (int i = 0; i < 20; i++) {
-      base += random.nextDouble() * 20 - 10;
-      spots.add(FlSpot(i.toDouble(), base));
-    }
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDark = themeProvider.isDarkMode;
+    final scale = MediaQuery.of(context).size.width / 900;
+    final primaryColor = Colors.deepPurpleAccent;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final backgroundColor = isDark ? Colors.black : Colors.white;
 
-    return SizedBox(
-      height: 260,
-      child: AnimatedBuilder(
-        animation: animationController,
-        builder: (context, child) {
-          final tilt = sin(animationController.value * 2 * pi) * 0.02;
-          return Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateX(tilt)
-              ..rotateY(-tilt),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0F2027), Color(0xFF203A43)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      appBar: AppBar(
+        backgroundColor: isDark ? Colors.black87 : Colors.white70,
+        elevation: 1,
+        centerTitle: true,
+        leading: null, // No back button on homepage
+        title: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: "Demo",
+                style: GoogleFonts.barlow(
+                  color: Colors.deepOrangeAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22 * scale,
+                  letterSpacing: 1.4,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.tealAccent.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 6))
+              ),
+              TextSpan(
+                text: "Trader",
+                style: GoogleFonts.barlow(
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22 * scale,
+                  letterSpacing: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => context.go('/search'),
+            icon: Icon(Icons.search, color: textColor, size: 26 * scale),
+            tooltip: "Search",
+          ),
+          IconButton(
+            onPressed: () => context.go('/notifications'),
+            icon: Icon(Icons.notifications_none, color: textColor, size: 26 * scale),
+            tooltip: "Notifications",
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          const AnimatedGradientWidget(),
+          SafeArea(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                // Add refresh logic here
+              },
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                children: [
+                  FadeTransition(
+                    opacity: _heroImageFade,
+                    child: _buildHeroSection(scale, primaryColor),
+                  ),
+                  SizedBox(height: 28 * scale),
+                  AnimatedInView(index: 0, child: WalletBalanceCard(scale: scale)),
+                  SizedBox(height: 16 * scale),
+                  AnimatedInView(index: 1, child: BalanceCard(scale: scale)),
+                  SizedBox(height: 24 * scale),
+                  AnimatedInView(index: 2, child: MarketTabs()),
+                  SizedBox(height: 16 * scale),
+                  AnimatedInView(index: 3, child: FilterChips()),
+                  SizedBox(height: 20 * scale),
+
+                  _buildSection(
+                    title: 'Trending Stocks',
+                    scale: scale,
+                    child: TrendingSection(scale: scale),
+                    onViewAllTap: () => context.go('/market-movers'),
+                    animationIndex: 4,
+                  ),
+                  SizedBox(height: 20 * scale),
+
+                  _buildSection(
+                    title: 'Latest News',
+                    scale: scale,
+                    child: CompactNewsSection(scale: scale),
+                    onViewAllTap: () => context.go('/news'),
+                    animationIndex: 8,
+                  ),
+                  SizedBox(height: 20 * scale),
+
+                  _buildSection(
+                    title: 'Live Stock Chart',
+                    scale: scale,
+                    child: StockChartSection(scale: scale),
+                    onViewAllTap: () => context.go('/stock-chart'),
+                    animationIndex: 5,
+                  ),
+                  SizedBox(height: 20 * scale),
+
+                  _buildSection(
+                    title: 'Compare Stocks',
+                    scale: scale,
+                    child: StockComparisonSection(scale: scale),
+                    animationIndex: 6,
+                  ),
+                  SizedBox(height: 16 * scale),
+
+                  _buildSection(
+                    title: 'Watchlist',
+                    scale: scale,
+                    child: CompactWatchlistSection(scale: scale),
+                    onViewAllTap: () => context.go('/watchlist'),
+                    animationIndex: 7,
+                  ),
+                  const SizedBox(height: 8),
                 ],
               ),
-              child: LineChart(LineChartData(
-                  gridData: FlGridData(show: false),
-                  titlesData: FlTitlesData(show: false),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                        spots: spots,
-                        isCurved: true,
-                        color: Colors.tealAccent,
-                        barWidth: 2,
-                        isStrokeCapRound: true,
-                        dotData: FlDotData(show: false),
-                        belowBarData: BarAreaData(
-                            show: true,
-                            color: Colors.tealAccent.withOpacity(0.1))),
-                  ])),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// =============================================================
-// MARKET TICKER (Auto Scroll)
-// =============================================================
-class MarketTicker extends StatefulWidget {
-  final List<String> items;
-  const MarketTicker({super.key, required this.items});
-  @override
-  State<MarketTicker> createState() => _MarketTickerState();
-}
-
-class _MarketTickerState extends State<MarketTicker> {
-  final ScrollController _controller = ScrollController();
-  Timer? _scrollTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 150), (_) {
-      if (_controller.hasClients) {
-        _controller.jumpTo(_controller.offset + 1);
-        if (_controller.offset >= _controller.position.maxScrollExtent) {
-          _controller.jumpTo(0);
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollTimer?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.watch<ThemeProvider>();
-    return SizedBox(
-      height: 28,
-      child: ListView.builder(
-        controller: _controller,
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.items.length * 3,
-        itemBuilder: (context, index) {
-          final item = widget.items[index % widget.items.length];
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 14),
-            child: Text(item,
-                style: TextStyle(
-                    color: item.contains('▲')
-                        ? Colors.greenAccent
-                        : item.contains('▼')
-                        ? Colors.redAccent
-                        : theme.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14)),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// =============================================================
-// PORTFOLIO SECTION WITH ANIMATION
-// =============================================================
-class PortfolioSection extends StatefulWidget {
-  final double value;
-  final double changePct;
-  final bool animated;
-  const PortfolioSection(
-      {super.key,
-        required this.value,
-        required this.changePct,
-        this.animated = false});
-  @override
-  State<PortfolioSection> createState() => _PortfolioSectionState();
-}
-
-class _PortfolioSectionState extends State<PortfolioSection>
-    with SingleTickerProviderStateMixin {
-  double oldVal = 0;
-  @override
-  void didUpdateWidget(covariant PortfolioSection oldWidget) {
-    if (widget.animated) oldVal = oldWidget.value;
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.watch<ThemeProvider>();
-    final isUp = widget.changePct >= 0;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: oldVal, end: widget.value),
-      duration: const Duration(seconds: 1),
-      builder: (context, val, _) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: theme.primaryColor),
-            color: Colors.white.withOpacity(0.05)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Portfolio Value',
-                style: GoogleFonts.orbitron(
-                    fontSize: 14, color: Colors.white70)),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text('₹${val.toStringAsFixed(2)}',
-                    style: GoogleFonts.orbitron(
-                        fontSize: 30, color: Colors.white)),
-                const SizedBox(width: 12),
-                Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                      color: isUp
-                          ? Colors.green.withOpacity(0.15)
-                          : Colors.red.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Row(
-                    children: [
-                      Icon(isUp ? Icons.arrow_upward : Icons.arrow_downward,
-                          color:
-                          isUp ? Colors.greenAccent : Colors.redAccent,
-                          size: 14),
-                      Text('${widget.changePct.toStringAsFixed(2)}%',
-                          style: TextStyle(
-                              color: isUp
-                                  ? Colors.greenAccent
-                                  : Colors.redAccent)),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// =============================================================
-// OTHER SECTIONS (REUSED WITH MINOR TWEAKS)
-// =============================================================
-
-// MarketMoversHorizontal, RecentTradesTicker, NewsCarousel,
-// QuickActionsRow, SectionHeader remain the same as your code.
-
-
-
-// MARKET MOVERS HORIZONTAL
-class MarketMoversHorizontal extends StatelessWidget {
-  final List<Stock> stocks;
-  const MarketMoversHorizontal({super.key, required this.stocks});
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 120,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: stocks.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final stock = stocks[index];
-          final isUp = stock.isUp;
-          return Container(
-            width: 140,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                  color: isUp ? Colors.greenAccent : Colors.redAccent),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(stock.symbol,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isUp
-                            ? Colors.greenAccent
-                            : Colors.redAccent)),
-                const Spacer(),
-                Text('₹${stock.price.toStringAsFixed(2)}',
-                    style: const TextStyle(color: Colors.white)),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// RECENT TRADES TICKER
-class RecentTradesTicker extends StatelessWidget {
-  const RecentTradesTicker({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final trades = [
-      'AAPL Buy 2 @ ₹150',
-      'TSLA Sell 1 @ ₹700',
-      'GOOG Buy 3 @ ₹2500'
-    ];
-    return Column(
-      children: trades
-          .map((t) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text(t, style: const TextStyle(color: Colors.white)),
-      ))
-          .toList(),
-    );
-  }
-}
-
-// NEWS CAROUSEL
-class NewsCarousel extends StatelessWidget {
-  const NewsCarousel({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-        height: 160,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: 5,
-          separatorBuilder: (_, __) => const SizedBox(width: 12),
-          itemBuilder: (_, i) => Container(
-            width: 200,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(16)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text("Breaking News Headline",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-                Spacer(),
-                Text("2h ago",
-                    style:
-                    TextStyle(color: Colors.white54, fontSize: 12)),
-              ],
             ),
           ),
-        ));
-  }
-}
-
-// QUICK ACTIONS ROW
-class QuickActionsRow extends StatelessWidget {
-  const QuickActionsRow({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final shortcuts = [
-      {'icon': Icons.swap_vert, 'label': 'Trade', 'route': AppRoutes.trading},
-      {
-        'icon': Icons.account_balance_wallet,
-        'label': 'Portfolio',
-        'route': AppRoutes.portfolio
-      },
-      {
-        'icon': Icons.history,
-        'label': 'History',
-        'route': AppRoutes.tradingHistory
-      },
-      {'icon': Icons.settings, 'label': 'Settings', 'route': AppRoutes.settings}
-    ];
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: shortcuts
-            .map((s) => GestureDetector(
-          onTap: () => context.push(s['route'] as String),
-          child: Column(
-            children: [
-              Icon(s['icon'] as IconData,
-                  color: Colors.tealAccent, size: 28),
-              const SizedBox(height: 6),
-              Text(s['label'] as String,
-                  style: const TextStyle(
-                      color: Colors.white70, fontSize: 12)),
-            ],
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        indicatorColor: Colors.transparent,
+        backgroundColor: isDark ? Colors.black : Colors.white,
+        onDestinationSelected: _onNavTap,
+        destinations: [
+          NavigationDestination(
+            icon: Icon(Icons.notifications_none, color: _selectedIndex == 0 ? primaryColor : Colors.grey),
+            label: 'Notifications',
           ),
-        ))
-            .toList());
+          NavigationDestination(
+            icon: Icon(Icons.settings, color: _selectedIndex == 1 ? primaryColor : Colors.grey),
+            label: 'Settings',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person, color: _selectedIndex == 2 ? primaryColor : Colors.grey),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
   }
-}
 
-// SECTION HEADER
-class SectionHeader extends StatelessWidget {
-  final String title;
-  final VoidCallback onViewAll;
-  const SectionHeader({super.key, required this.title, required this.onViewAll});
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(title,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Colors.white)),
-        const Spacer(),
-        TextButton(
-            onPressed: onViewAll,
-            child: const Text("View All",
-                style: TextStyle(color: Colors.white54)))
-      ],
+  Widget _buildSection({
+    required String title,
+    required double scale,
+    required Widget child,
+    VoidCallback? onViewAllTap,
+    required int animationIndex,
+  }) {
+    return AnimatedInView(
+      index: animationIndex,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            title: title,
+            scale: scale,
+            onViewAll: onViewAllTap,
+          ),
+          SizedBox(height: 6 * scale),
+          child,
+        ],
+      ),
     );
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:finalproject/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // to remember onboarding status
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -12,27 +13,27 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
-  late AnimationController _topHandController;
-  late Animation<Offset> _topHandAnimation;
+  late final AnimationController _topHandController;
+  late final Animation<Offset> _topHandAnimation;
 
-  late AnimationController _bottomHandController;
-  late Animation<Offset> _bottomHandAnimation;
+  late final AnimationController _bottomHandController;
+  late final Animation<Offset> _bottomHandAnimation;
 
-  late AnimationController _titleFadeController;
-  late Animation<double> _titleFadeAnimation;
-  late AnimationController _titleScaleController;
-  late Animation<double> _titleScaleAnimation;
+  late final AnimationController _titleFadeController;
+  late final Animation<double> _titleFadeAnimation;
+  late final AnimationController _titleScaleController;
+  late final Animation<double> _titleScaleAnimation;
 
-  late AnimationController _sloganFadeController;
-  late Animation<double> _sloganFadeAnimation;
-  late AnimationController _sloganShimmerController;
+  late final AnimationController _sloganFadeController;
+  late final Animation<double> _sloganFadeAnimation;
+  late final AnimationController _sloganShimmerController;
 
   @override
   void initState() {
     super.initState();
     _initAnimations();
 
-    // After animations complete, decide where to go
+    // After animations complete, navigate based on onboarding status
     Future.delayed(const Duration(milliseconds: 3500), _navigateNext);
   }
 
@@ -45,7 +46,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     if (!seenOnboarding) {
       context.go(AppRoutes.onboarding);
     } else {
-      context.go(AppRoutes.login); // or AppRoutes.home for logged-in users
+      context.go(AppRoutes.login);
     }
   }
 
@@ -97,6 +98,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
 
+    // Start animations with delays
     _topHandController.forward();
     Future.delayed(const Duration(milliseconds: 600), () {
       _bottomHandController.forward();
@@ -144,7 +146,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         ),
         child: Stack(
           children: [
-            // Top hand
+            // Top animated hand image
             Positioned(
               left: screenW * 0.15,
               top: screenH * -0.05,
@@ -160,7 +162,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            // Bottom hand
+
+            // Bottom animated hand image
             Positioned(
               right: screenW * 0.11,
               bottom: screenH * -0.03,
@@ -173,7 +176,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            // Title
+
+            // Title with fade & scale animation
             Positioned(
               left: 0,
               right: 0,
@@ -199,7 +203,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                         Shadow(
                           color: Colors.purpleAccent.shade100,
                           blurRadius: 40,
-                          offset: const Offset(0, 0),
+                          offset: Offset.zero,
                         ),
                       ],
                     ),
@@ -207,7 +211,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            // Slogan
+
+            // Slogan with shimmer and fade animation
             Positioned(
               left: 0,
               right: 0,
@@ -217,10 +222,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                 child: AnimatedBuilder(
                   animation: _sloganShimmerController,
                   builder: (context, child) {
-                    final shimmerValue =
-                        (_sloganShimmerController.value * 2) - 1; // range -1 to 1
-                    final double blurRadius =
-                        5 + (3 * shimmerValue.abs());
+                    final shimmerValue = (_sloganShimmerController.value * 2) - 1; // -1 to 1
+                    final double blurRadius = 5 + (3 * shimmerValue.abs());
                     final double offsetY = -2 * shimmerValue;
                     return Text(
                       'Trade Your Passion With Virtual Money',

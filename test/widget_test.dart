@@ -7,7 +7,8 @@ import 'package:finalproject/main.dart';
 void main() {
   testWidgets('App loads and shows DemoTrader text', (WidgetTester tester) async {
     // Build your app and trigger a frame.
-    await tester.pumpWidget(const DemoApp());
+    await tester.pumpWidget(DemoApp());
+
 
     // Verify that the text 'DemoTrader' is found,
     // which is present on your splash screen.

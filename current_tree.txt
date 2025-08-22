@@ -1,0 +1,897 @@
+Folder PATH listing for volume Windows-SSD
+Volume serial number is 1244-435E
+C:.
+¦   .gitignore
+¦   .metadata
+¦   analysis_options.yaml
+¦   current_tree.txt
+¦   directory_list.txt
+¦   fileneedt.txt
+¦   firebase.json
+¦   genneed.txt
+¦   nice.txt
+¦   project_structure.txt
+¦   pubspec.lock
+¦   pubspec.yaml
+¦   README.md
+¦   
++---.idea
+¦   ¦   .gitignore
+¦   ¦   deviceManager.xml
+¦   ¦   finalproject.iml
+¦   ¦   modules.xml
+¦   ¦   vcs.xml
+¦   ¦   workspace.xml
+¦   ¦   
+¦   +---caches
+¦   ¦       deviceStreaming.xml
+¦   ¦       
+¦   +---libraries
+¦           Dart_Packages.xml
+¦           Dart_SDK.xml
+¦           Flutter_Plugins.xml
+¦           
++---android
+¦   ¦   .gitignore
+¦   ¦   build.gradle.kts
+¦   ¦   finalproject_android.iml
+¦   ¦   gradle.properties
+¦   ¦   gradlew
+¦   ¦   gradlew.bat
+¦   ¦   hs_err_pid1564.log
+¦   ¦   hs_err_pid20960.log
+¦   ¦   hs_err_pid22544.log
+¦   ¦   hs_err_pid9164.log
+¦   ¦   hs_err_pid9756.log
+¦   ¦   local.properties
+¦   ¦   settings.gradle.kts
+¦   ¦   
+¦   +---.gradle
+¦   ¦   ¦   config.properties
+¦   ¦   ¦   file-system.probe
+¦   ¦   ¦   workspace-id.txt
+¦   ¦   ¦   workspace-id.txt.lock
+¦   ¦   ¦   
+¦   ¦   +---8.13
+¦   ¦   ¦   ¦   gc.properties
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---checksums
+¦   ¦   ¦   ¦       checksums.lock
+¦   ¦   ¦   ¦       md5-checksums.bin
+¦   ¦   ¦   ¦       sha1-checksums.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---executionHistory
+¦   ¦   ¦   ¦       executionHistory.bin
+¦   ¦   ¦   ¦       executionHistory.lock
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---expanded
+¦   ¦   ¦   +---fileChanges
+¦   ¦   ¦   ¦       last-build.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---fileHashes
+¦   ¦   ¦   ¦       fileHashes.bin
+¦   ¦   ¦   ¦       fileHashes.lock
+¦   ¦   ¦   ¦       resourceHashesCache.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---vcsMetadata
+¦   ¦   +---9.0-milestone-1
+¦   ¦   ¦   ¦   gc.properties
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---checksums
+¦   ¦   ¦   ¦       checksums.lock
+¦   ¦   ¦   ¦       md5-checksums.bin
+¦   ¦   ¦   ¦       sha1-checksums.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---executionHistory
+¦   ¦   ¦   ¦       executionHistory.lock
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---expanded
+¦   ¦   ¦   +---fileChanges
+¦   ¦   ¦   ¦       last-build.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---fileHashes
+¦   ¦   ¦   ¦       fileHashes.bin
+¦   ¦   ¦   ¦       fileHashes.lock
+¦   ¦   ¦   ¦       resourceHashesCache.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---vcsMetadata
+¦   ¦   +---buildOutputCleanup
+¦   ¦   ¦       buildOutputCleanup.lock
+¦   ¦   ¦       cache.properties
+¦   ¦   ¦       outputFiles.bin
+¦   ¦   ¦       
+¦   ¦   +---noVersion
+¦   ¦   ¦       buildLogic.lock
+¦   ¦   ¦       
+¦   ¦   +---vcs-1
+¦   ¦           gc.properties
+¦   ¦           
+¦   +---.idea
+¦   ¦   ¦   .gitignore
+¦   ¦   ¦   AndroidProjectSystem.xml
+¦   ¦   ¦   compiler.xml
+¦   ¦   ¦   gradle.xml
+¦   ¦   ¦   migrations.xml
+¦   ¦   ¦   misc.xml
+¦   ¦   ¦   runConfigurations.xml
+¦   ¦   ¦   workspace.xml
+¦   ¦   ¦   
+¦   ¦   +---caches
+¦   ¦           deviceStreaming.xml
+¦   ¦           
+¦   +---.kotlin
+¦   ¦   +---sessions
+¦   +---app
+¦   ¦   ¦   build.gradle.kts
+¦   ¦   ¦   google-services.json
+¦   ¦   ¦   
+¦   ¦   +---.cxx
+¦   ¦   ¦   +---Debug
+¦   ¦   ¦       +---444c4966
+¦   ¦   ¦           ¦   hash_key.txt
+¦   ¦   ¦           ¦   
+¦   ¦   ¦           +---arm64-v8a
+¦   ¦   ¦           ¦   ¦   additional_project_files.txt
+¦   ¦   ¦           ¦   ¦   android_gradle_build.json
+¦   ¦   ¦           ¦   ¦   android_gradle_build_mini.json
+¦   ¦   ¦           ¦   ¦   build.ninja
+¦   ¦   ¦           ¦   ¦   build_file_index.txt
+¦   ¦   ¦           ¦   ¦   CMakeCache.txt
+¦   ¦   ¦           ¦   ¦   cmake_install.cmake
+¦   ¦   ¦           ¦   ¦   configure_fingerprint.bin
+¦   ¦   ¦           ¦   ¦   metadata_generation_command.txt
+¦   ¦   ¦           ¦   ¦   prefab_config.json
+¦   ¦   ¦           ¦   ¦   symbol_folder_index.txt
+¦   ¦   ¦           ¦   ¦   
+¦   ¦   ¦           ¦   +---.cmake
+¦   ¦   ¦           ¦   ¦   +---api
+¦   ¦   ¦           ¦   ¦       +---v1
+¦   ¦   ¦           ¦   ¦           +---query
+¦   ¦   ¦           ¦   ¦           ¦   +---client-agp
+¦   ¦   ¦           ¦   ¦           ¦           cache-v2
+¦   ¦   ¦           ¦   ¦           ¦           cmakeFiles-v1
+¦   ¦   ¦           ¦   ¦           ¦           codemodel-v2
+¦   ¦   ¦           ¦   ¦           ¦           
+¦   ¦   ¦           ¦   ¦           +---reply
+¦   ¦   ¦           ¦   ¦                   cache-v2-e51aaef85afa40bff650.json
+¦   ¦   ¦           ¦   ¦                   cmakeFiles-v1-2497b09a1e7b261fe1fd.json
+¦   ¦   ¦           ¦   ¦                   codemodel-v2-e7e0267afb51e6e810a9.json
+¦   ¦   ¦           ¦   ¦                   directory-.-Debug-d0094a50bb2071803777.json
+¦   ¦   ¦           ¦   ¦                   index-2025-08-14T10-54-53-0040.json
+¦   ¦   ¦           ¦   ¦                   
+¦   ¦   ¦           ¦   +---CMakeFiles
+¦   ¦   ¦           ¦       ¦   cmake.check_cache
+¦   ¦   ¦           ¦       ¦   CMakeOutput.log
+¦   ¦   ¦           ¦       ¦   rules.ninja
+¦   ¦   ¦           ¦       ¦   TargetDirectories.txt
+¦   ¦   ¦           ¦       ¦   
+¦   ¦   ¦           ¦       +---3.22.1-g37088a8-dirty
+¦   ¦   ¦           ¦       ¦   ¦   CMakeCCompiler.cmake
+¦   ¦   ¦           ¦       ¦   ¦   CMakeCXXCompiler.cmake
+¦   ¦   ¦           ¦       ¦   ¦   CMakeDetermineCompilerABI_C.bin
+¦   ¦   ¦           ¦       ¦   ¦   CMakeDetermineCompilerABI_CXX.bin
+¦   ¦   ¦           ¦       ¦   ¦   CMakeSystem.cmake
+¦   ¦   ¦           ¦       ¦   ¦   
+¦   ¦   ¦           ¦       ¦   +---CompilerIdC
+¦   ¦   ¦           ¦       ¦   ¦   ¦   CMakeCCompilerId.c
+¦   ¦   ¦           ¦       ¦   ¦   ¦   CMakeCCompilerId.o
+¦   ¦   ¦           ¦       ¦   ¦   ¦   
+¦   ¦   ¦           ¦       ¦   ¦   +---tmp
+¦   ¦   ¦           ¦       ¦   +---CompilerIdCXX
+¦   ¦   ¦           ¦       ¦       ¦   CMakeCXXCompilerId.cpp
+¦   ¦   ¦           ¦       ¦       ¦   CMakeCXXCompilerId.o
+¦   ¦   ¦           ¦       ¦       ¦   
+¦   ¦   ¦           ¦       ¦       +---tmp
+¦   ¦   ¦           ¦       +---CMakeTmp
+¦   ¦   ¦           +---armeabi-v7a
+¦   ¦   ¦           ¦   ¦   additional_project_files.txt
+¦   ¦   ¦           ¦   ¦   android_gradle_build.json
+¦   ¦   ¦           ¦   ¦   android_gradle_build_mini.json
+¦   ¦   ¦           ¦   ¦   build.ninja
+¦   ¦   ¦           ¦   ¦   build_file_index.txt
+¦   ¦   ¦           ¦   ¦   CMakeCache.txt
+¦   ¦   ¦           ¦   ¦   cmake_install.cmake
+¦   ¦   ¦           ¦   ¦   configure_fingerprint.bin
+¦   ¦   ¦           ¦   ¦   metadata_generation_command.txt
+¦   ¦   ¦           ¦   ¦   prefab_config.json
+¦   ¦   ¦           ¦   ¦   symbol_folder_index.txt
+¦   ¦   ¦           ¦   ¦   
+¦   ¦   ¦           ¦   +---.cmake
+¦   ¦   ¦           ¦   ¦   +---api
+¦   ¦   ¦           ¦   ¦       +---v1
+¦   ¦   ¦           ¦   ¦           +---query
+¦   ¦   ¦           ¦   ¦           ¦   +---client-agp
+¦   ¦   ¦           ¦   ¦           ¦           cache-v2
+¦   ¦   ¦           ¦   ¦           ¦           cmakeFiles-v1
+¦   ¦   ¦           ¦   ¦           ¦           codemodel-v2
+¦   ¦   ¦           ¦   ¦           ¦           
+¦   ¦   ¦           ¦   ¦           +---reply
+¦   ¦   ¦           ¦   ¦                   cache-v2-022d042eb6a09fdb6883.json
+¦   ¦   ¦           ¦   ¦                   cmakeFiles-v1-15ec9db7ce75dbd99067.json
+¦   ¦   ¦           ¦   ¦                   codemodel-v2-8be28db759ace787767d.json
+¦   ¦   ¦           ¦   ¦                   directory-.-Debug-d0094a50bb2071803777.json
+¦   ¦   ¦           ¦   ¦                   index-2025-08-14T10-54-58-0279.json
+¦   ¦   ¦           ¦   ¦                   
+¦   ¦   ¦           ¦   +---CMakeFiles
+¦   ¦   ¦           ¦       ¦   cmake.check_cache
+¦   ¦   ¦           ¦       ¦   CMakeOutput.log
+¦   ¦   ¦           ¦       ¦   rules.ninja
+¦   ¦   ¦           ¦       ¦   TargetDirectories.txt
+¦   ¦   ¦           ¦       ¦   
+¦   ¦   ¦           ¦       +---3.22.1-g37088a8-dirty
+¦   ¦   ¦           ¦       ¦   ¦   CMakeCCompiler.cmake
+¦   ¦   ¦           ¦       ¦   ¦   CMakeCXXCompiler.cmake
+¦   ¦   ¦           ¦       ¦   ¦   CMakeDetermineCompilerABI_C.bin
+¦   ¦   ¦           ¦       ¦   ¦   CMakeDetermineCompilerABI_CXX.bin
+¦   ¦   ¦           ¦       ¦   ¦   CMakeSystem.cmake
+¦   ¦   ¦           ¦       ¦   ¦   
+¦   ¦   ¦           ¦       ¦   +---CompilerIdC
+¦   ¦   ¦           ¦       ¦   ¦   ¦   CMakeCCompilerId.c
+¦   ¦   ¦           ¦       ¦   ¦   ¦   CMakeCCompilerId.o
+¦   ¦   ¦           ¦       ¦   ¦   ¦   
+¦   ¦   ¦           ¦       ¦   ¦   +---tmp
+¦   ¦   ¦           ¦       ¦   +---CompilerIdCXX
+¦   ¦   ¦           ¦       ¦       ¦   CMakeCXXCompilerId.cpp
+¦   ¦   ¦           ¦       ¦       ¦   CMakeCXXCompilerId.o
+¦   ¦   ¦           ¦       ¦       ¦   
+¦   ¦   ¦           ¦       ¦       +---tmp
+¦   ¦   ¦           ¦       +---CMakeTmp
+¦   ¦   ¦           +---x86
+¦   ¦   ¦           ¦   ¦   additional_project_files.txt
+¦   ¦   ¦           ¦   ¦   android_gradle_build.json
+¦   ¦   ¦           ¦   ¦   android_gradle_build_mini.json
+¦   ¦   ¦           ¦   ¦   build.ninja
+¦   ¦   ¦           ¦   ¦   build_file_index.txt
+¦   ¦   ¦           ¦   ¦   CMakeCache.txt
+¦   ¦   ¦           ¦   ¦   cmake_install.cmake
+¦   ¦   ¦           ¦   ¦   configure_fingerprint.bin
+¦   ¦   ¦           ¦   ¦   metadata_generation_command.txt
+¦   ¦   ¦           ¦   ¦   prefab_config.json
+¦   ¦   ¦           ¦   ¦   symbol_folder_index.txt
+¦   ¦   ¦           ¦   ¦   
+¦   ¦   ¦           ¦   +---.cmake
+¦   ¦   ¦           ¦   ¦   +---api
+¦   ¦   ¦           ¦   ¦       +---v1
+¦   ¦   ¦           ¦   ¦           +---query
+¦   ¦   ¦           ¦   ¦           ¦   +---client-agp
+¦   ¦   ¦           ¦   ¦           ¦           cache-v2
+¦   ¦   ¦           ¦   ¦           ¦           cmakeFiles-v1
+¦   ¦   ¦           ¦   ¦           ¦           codemodel-v2
+¦   ¦   ¦           ¦   ¦           ¦           
+¦   ¦   ¦           ¦   ¦           +---reply
+¦   ¦   ¦           ¦   ¦                   cache-v2-cf4acc083f0e22ebfe34.json
+¦   ¦   ¦           ¦   ¦                   cmakeFiles-v1-323960cbc87bf41f3df2.json
+¦   ¦   ¦           ¦   ¦                   codemodel-v2-775cf3b568ab3741e61b.json
+¦   ¦   ¦           ¦   ¦                   directory-.-Debug-d0094a50bb2071803777.json
+¦   ¦   ¦           ¦   ¦                   index-2025-08-14T10-55-01-0057.json
+¦   ¦   ¦           ¦   ¦                   
+¦   ¦   ¦           ¦   +---CMakeFiles
+¦   ¦   ¦           ¦       ¦   cmake.check_cache
+¦   ¦   ¦           ¦       ¦   CMakeOutput.log
+¦   ¦   ¦           ¦       ¦   rules.ninja
+¦   ¦   ¦           ¦       ¦   TargetDirectories.txt
+¦   ¦   ¦           ¦       ¦   
+¦   ¦   ¦           ¦       +---3.22.1-g37088a8-dirty
+¦   ¦   ¦           ¦       ¦   ¦   CMakeCCompiler.cmake
+¦   ¦   ¦           ¦       ¦   ¦   CMakeCXXCompiler.cmake
+¦   ¦   ¦           ¦       ¦   ¦   CMakeDetermineCompilerABI_C.bin
+¦   ¦   ¦           ¦       ¦   ¦   CMakeDetermineCompilerABI_CXX.bin
+¦   ¦   ¦           ¦       ¦   ¦   CMakeSystem.cmake
+¦   ¦   ¦           ¦       ¦   ¦   
+¦   ¦   ¦           ¦       ¦   +---CompilerIdC
+¦   ¦   ¦           ¦       ¦   ¦   ¦   CMakeCCompilerId.c
+¦   ¦   ¦           ¦       ¦   ¦   ¦   CMakeCCompilerId.o
+¦   ¦   ¦           ¦       ¦   ¦   ¦   
+¦   ¦   ¦           ¦       ¦   ¦   +---tmp
+¦   ¦   ¦           ¦       ¦   +---CompilerIdCXX
+¦   ¦   ¦           ¦       ¦       ¦   CMakeCXXCompilerId.cpp
+¦   ¦   ¦           ¦       ¦       ¦   CMakeCXXCompilerId.o
+¦   ¦   ¦           ¦       ¦       ¦   
+¦   ¦   ¦           ¦       ¦       +---tmp
+¦   ¦   ¦           ¦       +---CMakeTmp
+¦   ¦   ¦           +---x86_64
+¦   ¦   ¦               ¦   additional_project_files.txt
+¦   ¦   ¦               ¦   android_gradle_build.json
+¦   ¦   ¦               ¦   android_gradle_build_mini.json
+¦   ¦   ¦               ¦   build.ninja
+¦   ¦   ¦               ¦   build_file_index.txt
+¦   ¦   ¦               ¦   CMakeCache.txt
+¦   ¦   ¦               ¦   cmake_install.cmake
+¦   ¦   ¦               ¦   configure_fingerprint.bin
+¦   ¦   ¦               ¦   metadata_generation_command.txt
+¦   ¦   ¦               ¦   prefab_config.json
+¦   ¦   ¦               ¦   symbol_folder_index.txt
+¦   ¦   ¦               ¦   
+¦   ¦   ¦               +---.cmake
+¦   ¦   ¦               ¦   +---api
+¦   ¦   ¦               ¦       +---v1
+¦   ¦   ¦               ¦           +---query
+¦   ¦   ¦               ¦           ¦   +---client-agp
+¦   ¦   ¦               ¦           ¦           cache-v2
+¦   ¦   ¦               ¦           ¦           cmakeFiles-v1
+¦   ¦   ¦               ¦           ¦           codemodel-v2
+¦   ¦   ¦               ¦           ¦           
+¦   ¦   ¦               ¦           +---reply
+¦   ¦   ¦               ¦                   cache-v2-a1fa773858e7833e4952.json
+¦   ¦   ¦               ¦                   cmakeFiles-v1-df1c0bd18125424d3d23.json
+¦   ¦   ¦               ¦                   codemodel-v2-1b0f293731656938d700.json
+¦   ¦   ¦               ¦                   directory-.-Debug-d0094a50bb2071803777.json
+¦   ¦   ¦               ¦                   index-2025-08-14T10-55-02-0889.json
+¦   ¦   ¦               ¦                   
+¦   ¦   ¦               +---CMakeFiles
+¦   ¦   ¦                   ¦   cmake.check_cache
+¦   ¦   ¦                   ¦   CMakeOutput.log
+¦   ¦   ¦                   ¦   rules.ninja
+¦   ¦   ¦                   ¦   TargetDirectories.txt
+¦   ¦   ¦                   ¦   
+¦   ¦   ¦                   +---3.22.1-g37088a8-dirty
+¦   ¦   ¦                   ¦   ¦   CMakeCCompiler.cmake
+¦   ¦   ¦                   ¦   ¦   CMakeCXXCompiler.cmake
+¦   ¦   ¦                   ¦   ¦   CMakeDetermineCompilerABI_C.bin
+¦   ¦   ¦                   ¦   ¦   CMakeDetermineCompilerABI_CXX.bin
+¦   ¦   ¦                   ¦   ¦   CMakeSystem.cmake
+¦   ¦   ¦                   ¦   ¦   
+¦   ¦   ¦                   ¦   +---CompilerIdC
+¦   ¦   ¦                   ¦   ¦   ¦   CMakeCCompilerId.c
+¦   ¦   ¦                   ¦   ¦   ¦   CMakeCCompilerId.o
+¦   ¦   ¦                   ¦   ¦   ¦   
+¦   ¦   ¦                   ¦   ¦   +---tmp
+¦   ¦   ¦                   ¦   +---CompilerIdCXX
+¦   ¦   ¦                   ¦       ¦   CMakeCXXCompilerId.cpp
+¦   ¦   ¦                   ¦       ¦   CMakeCXXCompilerId.o
+¦   ¦   ¦                   ¦       ¦   
+¦   ¦   ¦                   ¦       +---tmp
+¦   ¦   ¦                   +---CMakeTmp
+¦   ¦   +---build
+¦   ¦   ¦   +---generated
+¦   ¦   ¦   ¦   +---res
+¦   ¦   ¦   ¦       +---google-services
+¦   ¦   ¦   ¦       ¦   +---debug
+¦   ¦   ¦   ¦       ¦       +---values
+¦   ¦   ¦   ¦       ¦               values.xml
+¦   ¦   ¦   ¦       ¦               
+¦   ¦   ¦   ¦       +---pngs
+¦   ¦   ¦   ¦       ¦   +---debug
+¦   ¦   ¦   ¦       +---resValues
+¦   ¦   ¦   ¦           +---debug
+¦   ¦   ¦   +---intermediates
+¦   ¦   ¦   ¦   +---assets
+¦   ¦   ¦   ¦   ¦   +---debug
+¦   ¦   ¦   ¦   ¦       +---mergeDebugAssets
+¦   ¦   ¦   ¦   ¦           +---flutter_assets
+¦   ¦   ¦   ¦   ¦               ¦   AssetManifest.bin
+¦   ¦   ¦   ¦   ¦               ¦   AssetManifest.json
+¦   ¦   ¦   ¦   ¦               ¦   FontManifest.json
+¦   ¦   ¦   ¦   ¦               ¦   isolate_snapshot_data
+¦   ¦   ¦   ¦   ¦               ¦   kernel_blob.bin
+¦   ¦   ¦   ¦   ¦               ¦   NativeAssetsManifest.json
+¦   ¦   ¦   ¦   ¦               ¦   NOTICES.Z
+¦   ¦   ¦   ¦   ¦               ¦   vm_snapshot_data
+¦   ¦   ¦   ¦   ¦               ¦   
+¦   ¦   ¦   ¦   ¦               +---fonts
+¦   ¦   ¦   ¦   ¦               ¦       MaterialIcons-Regular.otf
+¦   ¦   ¦   ¦   ¦               ¦       
+¦   ¦   ¦   ¦   ¦               +---lib
+¦   ¦   ¦   ¦   ¦               ¦   +---assets
+¦   ¦   ¦   ¦   ¦               ¦       +---images
+¦   ¦   ¦   ¦   ¦               ¦               cyborg_hand_left.png
+¦   ¦   ¦   ¦   ¦               ¦               cyborg_hand_right.png
+¦   ¦   ¦   ¦   ¦               ¦               google_logo.png
+¦   ¦   ¦   ¦   ¦               ¦               logo_.png
+¦   ¦   ¦   ¦   ¦               ¦               
+¦   ¦   ¦   ¦   ¦               +---packages
+¦   ¦   ¦   ¦   ¦               ¦   +---cupertino_icons
+¦   ¦   ¦   ¦   ¦               ¦   ¦   +---assets
+¦   ¦   ¦   ¦   ¦               ¦   ¦           CupertinoIcons.ttf
+¦   ¦   ¦   ¦   ¦               ¦   ¦           
+¦   ¦   ¦   ¦   ¦               ¦   +---model_viewer_plus
+¦   ¦   ¦   ¦   ¦               ¦       +---assets
+¦   ¦   ¦   ¦   ¦               ¦               model-viewer.min.js
+¦   ¦   ¦   ¦   ¦               ¦               template.html
+¦   ¦   ¦   ¦   ¦               ¦               
+¦   ¦   ¦   ¦   ¦               +---shaders
+¦   ¦   ¦   ¦   ¦                       ink_sparkle.frag
+¦   ¦   ¦   ¦   ¦                       
+¦   ¦   ¦   ¦   +---compile_and_runtime_not_namespaced_r_class_jar
+¦   ¦   ¦   ¦   ¦   +---debug
+¦   ¦   ¦   ¦   ¦       +---processDebugResources
+¦   ¦   ¦   ¦   ¦               R.jar
+¦   ¦   ¦   ¦   ¦               
+¦   ¦   ¦   ¦   +---cxx
+¦   ¦   ¦   ¦   ¦   +---Debug
+¦   ¦   ¦   ¦   ¦       +---444c4966
+¦   ¦   ¦   ¦   ¦           +---logs
+¦   ¦   ¦   ¦   ¦           ¦   +---arm64-v8a
+¦   ¦   ¦   ¦   ¦           ¦   ¦       build_model.json
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_command.bat
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_stderr.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_stdout.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1020_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1184_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1367_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1529_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1698_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1877_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_327_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_440_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_519_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_670_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_842_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_93_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_99_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       metadata_generation_record.json
+¦   ¦   ¦   ¦   ¦           ¦   ¦       
+¦   ¦   ¦   ¦   ¦           ¦   +---armeabi-v7a
+¦   ¦   ¦   ¦   ¦           ¦   ¦       build_model.json
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_command.bat
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_stderr.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_stdout.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_100_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1020_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1184_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1367_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1529_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1698_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1877_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_335_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_444_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_519_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_670_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_849_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_93_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       metadata_generation_record.json
+¦   ¦   ¦   ¦   ¦           ¦   ¦       
+¦   ¦   ¦   ¦   ¦           ¦   +---x86
+¦   ¦   ¦   ¦   ¦           ¦   ¦       build_model.json
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_command.bat
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_stderr.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       configure_stdout.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1016_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_102_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1184_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1367_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1529_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1698_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_1877_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_335_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_440_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_519_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_670_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_849_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       generate_cxx_metadata_93_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦   ¦       metadata_generation_record.json
+¦   ¦   ¦   ¦   ¦           ¦   ¦       
+¦   ¦   ¦   ¦   ¦           ¦   +---x86_64
+¦   ¦   ¦   ¦   ¦           ¦           build_model.json
+¦   ¦   ¦   ¦   ¦           ¦           configure_command.bat
+¦   ¦   ¦   ¦   ¦           ¦           configure_stderr.txt
+¦   ¦   ¦   ¦   ¦           ¦           configure_stdout.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_1013_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_102_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_1184_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_1367_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_1529_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_1698_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_1877_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_335_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_440_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_519_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_670_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_849_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           generate_cxx_metadata_93_timing.txt
+¦   ¦   ¦   ¦   ¦           ¦           metadata_generation_record.json
+¦   ¦   ¦   ¦   ¦           ¦           
+¦   ¦   ¦   ¦   ¦           +---obj
+¦   ¦   ¦   ¦   ¦               +---arm64-v8a
+¦   ¦   ¦   ¦   ¦               +---armeabi-v7a
+¦   ¦   ¦   ¦   ¦               +---x86
+¦   ¦   ¦   ¦   ¦               +---x86_64
+¦   ¦   ¦   ¦   +---flutter
+¦   ¦   ¦   ¦   ¦   +---debug
+¦   ¦   ¦   ¦   ¦       ¦   .last_build_id
+¦   ¦   ¦   ¦   ¦       ¦   flutter_build.d
+¦   ¦   ¦   ¦   ¦       ¦   libs.jar
+¦   ¦   ¦   ¦   ¦       ¦   
+¦   ¦   ¦   ¦   ¦       +---flutter_assets
+¦   ¦   ¦   ¦   ¦           ¦   AssetManifest.bin
+¦   ¦   ¦   ¦   ¦           ¦   AssetManifest.json
+¦   ¦   ¦   ¦   ¦           ¦   FontManifest.json
+¦   ¦   ¦   ¦   ¦           ¦   isolate_snapshot_data
+¦   ¦   ¦   ¦   ¦           ¦   kernel_blob.bin
+¦   ¦   ¦   ¦   ¦           ¦   NativeAssetsManifest.json
+¦   ¦   ¦   ¦   ¦           ¦   NOTICES.Z
+¦   ¦   ¦   ¦   ¦           ¦   vm_snapshot_data
+¦   ¦   ¦   ¦   ¦           ¦   
+¦   ¦   ¦   ¦   ¦           +---fonts
+¦   ¦   ¦   ¦   ¦           ¦       MaterialIcons-Regular.otf
+¦   ¦   ¦   ¦   ¦           ¦       
+¦   ¦   ¦   ¦   ¦           +---lib
+¦   ¦   ¦   ¦   ¦           ¦   +---assets
+¦   ¦   ¦   ¦   ¦           ¦       +---images
+¦   ¦   ¦   ¦   ¦           ¦               cyborg_hand_left.png
+¦   ¦   ¦   ¦   ¦           ¦               cyborg_hand_right.png
+¦   ¦   ¦   ¦   ¦           ¦               google_logo.png
+¦   ¦   ¦   ¦   ¦           ¦               logo_.png
+¦   ¦   ¦   ¦   ¦           ¦               
+¦   ¦   ¦   ¦   ¦           +---packages
+¦   ¦   ¦   ¦   ¦           ¦   +---cupertino_icons
+¦   ¦   ¦   ¦   ¦           ¦   ¦   +---assets
+¦   ¦   ¦   ¦   ¦           ¦   ¦           CupertinoIcons.ttf
+¦   ¦   ¦   ¦   ¦           ¦   ¦           
+¦   ¦   ¦   ¦   ¦           ¦   +---model_viewer_plus
+¦   ¦   ¦   ¦   ¦           ¦       +---assets
+¦   ¦   ¦   ¦   ¦           ¦               model-viewer.min.js
+¦   ¦   ¦   ¦   ¦           ¦               template.html
+¦   ¦   ¦   ¦   ¦           ¦               
+¦   ¦   ¦   ¦   ¦           +---shaders
+¦   ¦   ¦   ¦   ¦                   ink_sparkle.frag
+¦   ¦   ¦   ¦   ¦                   
+¦   ¦   ¦   ¦   +---incremental
+¦   ¦   ¦   ¦   ¦   +---mergeDebugAssets
+¦   ¦   ¦   ¦   ¦           merger.xml
+¦   ¦   ¦   ¦   ¦           
+¦   ¦   ¦   ¦   +---linked_resources_binary_format
+¦   ¦   ¦   ¦   ¦   +---debug
+¦   ¦   ¦   ¦   ¦       +---processDebugResources
+¦   ¦   ¦   ¦   ¦               linked-resources-binary-format-debug.ap_
+¦   ¦   ¦   ¦   ¦               output-metadata.json
+¦   ¦   ¦   ¦   ¦               
+¦   ¦   ¦   ¦   +---runtime_symbol_list
+¦   ¦   ¦   ¦   ¦   +---debug
+¦   ¦   ¦   ¦   ¦       +---processDebugResources
+¦   ¦   ¦   ¦   ¦               R.txt
+¦   ¦   ¦   ¦   ¦               
+¦   ¦   ¦   ¦   +---stable_resource_ids_file
+¦   ¦   ¦   ¦   ¦   +---debug
+¦   ¦   ¦   ¦   ¦       +---processDebugResources
+¦   ¦   ¦   ¦   ¦               stableIds.txt
+¦   ¦   ¦   ¦   ¦               
+¦   ¦   ¦   ¦   +---symbol_list_with_package_name
+¦   ¦   ¦   ¦       +---debug
+¦   ¦   ¦   ¦           +---processDebugResources
+¦   ¦   ¦   ¦                   package-aware-r.txt
+¦   ¦   ¦   ¦                   
+¦   ¦   ¦   +---outputs
+¦   ¦   ¦       +---apk
+¦   ¦   ¦           +---debug
+¦   ¦   ¦                   app-debug.apk
+¦   ¦   ¦                   output-metadata.json
+¦   ¦   ¦                   
+¦   ¦   +---src
+¦   ¦       +---debug
+¦   ¦       ¦       AndroidManifest.xml
+¦   ¦       ¦       
+¦   ¦       +---main
+¦   ¦       ¦   ¦   AndroidManifest.xml
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---java
+¦   ¦       ¦   ¦   +---io
+¦   ¦       ¦   ¦       +---flutter
+¦   ¦       ¦   ¦           +---plugins
+¦   ¦       ¦   ¦                   GeneratedPluginRegistrant.java
+¦   ¦       ¦   ¦                   
+¦   ¦       ¦   +---kotlin
+¦   ¦       ¦   ¦   +---com
+¦   ¦       ¦   ¦       +---example
+¦   ¦       ¦   ¦           +---finalproject
+¦   ¦       ¦   ¦                   MainActivity.kt
+¦   ¦       ¦   ¦                   
+¦   ¦       ¦   +---res
+¦   ¦       ¦       +---drawable
+¦   ¦       ¦       ¦       launch_background.xml
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---drawable-v21
+¦   ¦       ¦       ¦       launch_background.xml
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-hdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-mdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-xhdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-xxhdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-xxxhdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---values
+¦   ¦       ¦       ¦       styles.xml
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---values-night
+¦   ¦       ¦               styles.xml
+¦   ¦       ¦               
+¦   ¦       +---profile
+¦   ¦               AndroidManifest.xml
+¦   ¦               
+¦   +---build
+¦   ¦   +---reports
+¦   ¦       +---problems
+¦   ¦               problems-report.html
+¦   ¦               
+¦   +---gradle
+¦       +---wrapper
+¦               gradle-wrapper.jar
+¦               gradle-wrapper.properties
+¦               
++---ios
+¦   ¦   .gitignore
+¦   ¦   
+¦   +---Flutter
+¦   ¦       AppFrameworkInfo.plist
+¦   ¦       Debug.xcconfig
+¦   ¦       Release.xcconfig
+¦   ¦       
+¦   +---Runner
+¦   ¦   ¦   AppDelegate.swift
+¦   ¦   ¦   GeneratedPluginRegistrant.h
+¦   ¦   ¦   GeneratedPluginRegistrant.m
+¦   ¦   ¦   Info.plist
+¦   ¦   ¦   Runner-Bridging-Header.h
+¦   ¦   ¦   
+¦   ¦   +---Assets.xcassets
+¦   ¦   ¦   +---AppIcon.appiconset
+¦   ¦   ¦   ¦       Contents.json
+¦   ¦   ¦   ¦       Icon-App-1024x1024@1x.png
+¦   ¦   ¦   ¦       Icon-App-20x20@1x.png
+¦   ¦   ¦   ¦       Icon-App-20x20@2x.png
+¦   ¦   ¦   ¦       Icon-App-20x20@3x.png
+¦   ¦   ¦   ¦       Icon-App-29x29@1x.png
+¦   ¦   ¦   ¦       Icon-App-29x29@2x.png
+¦   ¦   ¦   ¦       Icon-App-29x29@3x.png
+¦   ¦   ¦   ¦       Icon-App-40x40@1x.png
+¦   ¦   ¦   ¦       Icon-App-40x40@2x.png
+¦   ¦   ¦   ¦       Icon-App-40x40@3x.png
+¦   ¦   ¦   ¦       Icon-App-60x60@2x.png
+¦   ¦   ¦   ¦       Icon-App-60x60@3x.png
+¦   ¦   ¦   ¦       Icon-App-76x76@1x.png
+¦   ¦   ¦   ¦       Icon-App-76x76@2x.png
+¦   ¦   ¦   ¦       Icon-App-83.5x83.5@2x.png
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---LaunchImage.imageset
+¦   ¦   ¦           Contents.json
+¦   ¦   ¦           LaunchImage.png
+¦   ¦   ¦           LaunchImage@2x.png
+¦   ¦   ¦           LaunchImage@3x.png
+¦   ¦   ¦           README.md
+¦   ¦   ¦           
+¦   ¦   +---Base.lproj
+¦   ¦           LaunchScreen.storyboard
+¦   ¦           Main.storyboard
+¦   ¦           
+¦   +---Runner.xcodeproj
+¦   ¦   ¦   project.pbxproj
+¦   ¦   ¦   
+¦   ¦   +---project.xcworkspace
+¦   ¦   ¦   ¦   contents.xcworkspacedata
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---xcshareddata
+¦   ¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦   ¦           WorkspaceSettings.xcsettings
+¦   ¦   ¦           
+¦   ¦   +---xcshareddata
+¦   ¦       +---xcschemes
+¦   ¦               Runner.xcscheme
+¦   ¦               
+¦   +---Runner.xcworkspace
+¦   ¦   ¦   contents.xcworkspacedata
+¦   ¦   ¦   
+¦   ¦   +---xcshareddata
+¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦           WorkspaceSettings.xcsettings
+¦   ¦           
+¦   +---RunnerTests
+¦           RunnerTests.swift
+¦           
++---lib
+¦   ¦   app.dart
+¦   ¦   firebase_options.dart
+¦   ¦   main.dart
+¦   ¦   
+¦   +---assets
+¦   ¦   +---images
+¦   ¦           cyborg_hand_left.png
+¦   ¦           cyborg_hand_right.png
+¦   ¦           google_logo.png
+¦   ¦           logo_.png
+¦   ¦           options.svg
+¦   ¦           portfolio.svg
+¦   ¦           trade.svg
+¦   ¦           
+¦   +---business_logic
+¦   ¦   +---models
+¦   ¦   ¦       notification_item.dart
+¦   ¦   ¦       stock.dart
+¦   ¦   ¦       trade_order.dart
+¦   ¦   ¦       
+¦   ¦   +---providers
+¦   ¦           auth_provider.dart
+¦   ¦           market_provider.dart
+¦   ¦           notification_provider.dart
+¦   ¦           portfolio_provider.dart
+¦   ¦           theme_provider.dart
+¦   ¦           wallet_provider.dart
+¦   ¦           
+¦   +---presentation
+¦   ¦   +---.idea
+¦   ¦   ¦   ¦   .gitignore
+¦   ¦   ¦   ¦   misc.xml
+¦   ¦   ¦   ¦   modules.xml
+¦   ¦   ¦   ¦   presentation.iml
+¦   ¦   ¦   ¦   workspace.xml
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---caches
+¦   ¦   ¦           deviceStreaming.xml
+¦   ¦   ¦           
+¦   ¦   +---pages
+¦   ¦   ¦   ¦   account_settings_page.dart
+¦   ¦   ¦   ¦   appearance_settings_page.dart
+¦   ¦   ¦   ¦   color_picker_page.dart
+¦   ¦   ¦   ¦   demo_trading_screen.dart
+¦   ¦   ¦   ¦   home_page.dart
+¦   ¦   ¦   ¦   market_movers_page.dart
+¦   ¦   ¦   ¦   news_detail_page.dart
+¦   ¦   ¦   ¦   news_page.dart
+¦   ¦   ¦   ¦   notifications_page.dart
+¦   ¦   ¦   ¦   notification_settings_page.dart
+¦   ¦   ¦   ¦   onboarding_page.dart
+¦   ¦   ¦   ¦   order_confirmation_page.dart
+¦   ¦   ¦   ¦   portfolio_details_page.dart
+¦   ¦   ¦   ¦   portfolio_page.dart
+¦   ¦   ¦   ¦   profile_page.dart
+¦   ¦   ¦   ¦   search_page.dart
+¦   ¦   ¦   ¦   settings_page.dart
+¦   ¦   ¦   ¦   splash_page.dart
+¦   ¦   ¦   ¦   stock_chart_page.dart
+¦   ¦   ¦   ¦   trading_history_page.dart
+¦   ¦   ¦   ¦   trading_page.dart
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---auth
+¦   ¦   ¦           login_page.dart
+¦   ¦   ¦           signup_page.dart
+¦   ¦   ¦           
+¦   ¦   +---widgets
+¦   ¦           animated_gradient_widget.dart
+¦   ¦           animated_in_view.dart
+¦   ¦           animated_realtime_chart.dart
+¦   ¦           animated_realtime_chart_polished.dart
+¦   ¦           animated_wrappers.dart
+¦   ¦           app_footer.dart
+¦   ¦           app_glassy_card.dart
+¦   ¦           candlestick_chart.dart
+¦   ¦           enhanced_realtime_chart.dart
+¦   ¦           gradient_text.dart
+¦   ¦           interactive_call_put_toggle.dart
+¦   ¦           neon_button.dart
+¦   ¦           notification_icon.dart
+¦   ¦           parallax_card.dart
+¦   ¦           parallax_draggable_card.dart
+¦   ¦           portfolio_holdings.dart
+¦   ¦           quick_actions.dart
+¦   ¦           realtime_chart.dart
+¦   ¦           realtime_option_chart.dart
+¦   ¦           recent_trades.dart
+¦   ¦           section_header.dart
+¦   ¦           stock_ticker.dart
+¦   ¦           trade_dialog.dart
+¦   ¦           wallet_balance_card.dart
+¦   ¦           watchlist.dart
+¦   ¦           
+¦   +---routes
+¦           app_router.dart
+¦           app_routes.dart
+¦           
++---linux
+¦   ¦   .gitignore
+¦   ¦   CMakeLists.txt
+¦   ¦   
+¦   +---flutter
+¦   ¦       CMakeLists.txt
+¦   ¦       generated_plugins.cmake
+¦   ¦       generated_plugin_registrant.cc
+¦   ¦       generated_plugin_registrant.h
+¦   ¦       
+¦   +---runner
+¦           CMakeLists.txt
+¦           main.cc
+¦           my_application.cc
+¦           my_application.h
+¦           
++---macos
+¦   ¦   .gitignore
+¦   ¦   
+¦   +---Flutter
+¦   ¦       Flutter-Debug.xcconfig
+¦   ¦       Flutter-Release.xcconfig
+¦   ¦       GeneratedPluginRegistrant.swift
+¦   ¦       
+¦   +---Runner
+¦   ¦   ¦   AppDelegate.swift
+¦   ¦   ¦   DebugProfile.entitlements
+¦   ¦   ¦   Info.plist
+¦   ¦   ¦   MainFlutterWindow.swift
+¦   ¦   ¦   Release.entitlements
+¦   ¦   ¦   
+¦   ¦   +---Assets.xcassets
+¦   ¦   ¦   +---AppIcon.appiconset
+¦   ¦   ¦           app_icon_1024.png
+¦   ¦   ¦           app_icon_128.png
+¦   ¦   ¦           app_icon_16.png
+¦   ¦   ¦           app_icon_256.png
+¦   ¦   ¦           app_icon_32.png
+¦   ¦   ¦           app_icon_512.png
+¦   ¦   ¦           app_icon_64.png
+¦   ¦   ¦           Contents.json
+¦   ¦   ¦           
+¦   ¦   +---Base.lproj
+¦   ¦   ¦       MainMenu.xib
+¦   ¦   ¦       
+¦   ¦   +---Configs
+¦   ¦           AppInfo.xcconfig
+¦   ¦           Debug.xcconfig
+¦   ¦           Release.xcconfig
+¦   ¦           Warnings.xcconfig
+¦   ¦           
+¦   +---Runner.xcodeproj
+¦   ¦   ¦   project.pbxproj
+¦   ¦   ¦   
+¦   ¦   +---project.xcworkspace
+¦   ¦   ¦   +---xcshareddata
+¦   ¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦   ¦           
+¦   ¦   +---xcshareddata
+¦   ¦       +---xcschemes
+¦   ¦               Runner.xcscheme
+¦   ¦               
+¦   +---Runner.xcworkspace
+¦   ¦   ¦   contents.xcworkspacedata
+¦   ¦   ¦   
+¦   ¦   +---xcshareddata
+¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦           
+¦   +---RunnerTests
+¦           RunnerTests.swift
+¦           
++---test
+¦       widget_test.dart
+¦       
++---web
+¦   ¦   favicon.png
+¦   ¦   index.html
+¦   ¦   manifest.json
+¦   ¦   
+¦   +---icons
+¦           Icon-192.png
+¦           Icon-512.png
+¦           Icon-maskable-192.png
+¦           Icon-maskable-512.png
+¦           
++---windows
+    ¦   .gitignore
+    ¦   CMakeLists.txt
+    ¦   
+    +---flutter
+    ¦       CMakeLists.txt
+    ¦       generated_plugins.cmake
+    ¦       generated_plugin_registrant.cc
+    ¦       generated_plugin_registrant.h
+    ¦       
+    +---runner
+        ¦   CMakeLists.txt
+        ¦   flutter_window.cpp
+        ¦   flutter_window.h
+        ¦   main.cpp
+        ¦   resource.h
+        ¦   runner.exe.manifest
+        ¦   Runner.rc
+        ¦   utils.cpp
+        ¦   utils.h
+        ¦   win32_window.cpp
+        ¦   win32_window.h
+        ¦   
+        +---resources
+                app_icon.ico
+                

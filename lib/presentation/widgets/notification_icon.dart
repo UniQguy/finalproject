@@ -4,6 +4,7 @@ import '../../business_logic/providers/notification_provider.dart';
 
 class NotificationIcon extends StatefulWidget {
   final VoidCallback onPressed;
+
   const NotificationIcon({required this.onPressed, super.key});
 
   @override
@@ -12,18 +13,19 @@ class NotificationIcon extends StatefulWidget {
 
 class _NotificationIconState extends State<NotificationIcon>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _scaleAnimation =
-        Tween<double>(begin: 1.0, end: 1.4).animate(
-          CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-        );
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.4).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -78,9 +80,10 @@ class _NotificationIconState extends State<NotificationIcon>
                 child: Text(
                   unreadCount > 99 ? '99+' : unreadCount.toString(),
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

@@ -1,59 +1,51 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../business_logic/providers/theme_provider.dart';
 
+/// Glassy card widget with optional margin, padding, border, and blur effect.
+/// Use this as a reusable card style across your app.
 class AppGlassyCard extends StatelessWidget {
   final Widget child;
-  final EdgeInsetsGeometry padding;
-  final BorderRadius? borderRadius;
-  final BoxDecoration? decoration;
-  final Color? borderColor; // Made optional
+  final BorderRadius borderRadius;
+  final EdgeInsets padding;
+  final EdgeInsets? margin;
+  final Color? borderColor;
 
   const AppGlassyCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(14),
-    this.borderRadius,
-    this.decoration,
-    this.borderColor, // optional borderColor
+    this.borderRadius = const BorderRadius.all(Radius.circular(20)),
+    this.padding = const EdgeInsets.all(16),
+    this.margin,
+    this.borderColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final radius = borderRadius ?? BorderRadius.circular(20);
-
-    return ClipRRect(
-      borderRadius: radius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          padding: padding,
-          decoration: decoration ??
-              BoxDecoration(
-                borderRadius: radius,
-                border: Border.all(
-                  color: borderColor ?? themeProvider.primaryColor.withOpacity(0.25),
-                  width: 1.5,
-                ),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.06),
-                    Colors.white.withOpacity(0.02),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (borderColor ?? themeProvider.primaryColor).withOpacity(0.25),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
+    return Container(
+      margin: margin,
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: padding,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: borderRadius,
+              border: Border.all(
+                color: borderColor ?? Colors.white.withOpacity(0.2),
+                width: 1.5,
               ),
-          child: child,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: child,
+          ),
         ),
       ),
     );

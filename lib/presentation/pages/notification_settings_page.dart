@@ -1,107 +1,68 @@
 import 'package:flutter/material.dart';
-import '../widgets/animated_gradient_widget.dart';
-import '../widgets/app_glassy_card.dart';
-import '../widgets/gradient_text.dart';
-import '../widgets/animated_in_view.dart';
+import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class NotificationSettingsPage extends StatefulWidget {
+import '../../business_logic/providers/notification_provider.dart';
+
+/// Page to control various notification settings with toggles.
+class NotificationSettingsPage extends StatelessWidget {
   const NotificationSettingsPage({super.key});
 
   @override
-  State<NotificationSettingsPage> createState() =>
-      _NotificationSettingsPageState();
-}
-
-class _NotificationSettingsPageState
-    extends State<NotificationSettingsPage> {
-  bool pushEnabled = true;
-  bool emailEnabled = false;
-  bool smsEnabled = false;
-
-  @override
   Widget build(BuildContext context) {
+    final notificationProvider = context.watch<NotificationProvider>();
+
     return Scaffold(
-      body: Stack(
-        children: [
-          const AnimatedGradientWidget(),
-          SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              physics: const BouncingScrollPhysics(),
-              children: [
-                GradientText(
-                  text: '🔔 Notification Settings',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  gradient: const LinearGradient(
-                    colors: [Colors.tealAccent, Colors.pinkAccent],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Push Notifications
-                AnimatedInView(
-                  index: 0,
-                  child: AppGlassyCard(
-                    borderColor: Colors.tealAccent, // ✅ Added required param
-                    child: SwitchListTile(
-                      activeColor: Colors.tealAccent,
-                      title: const Text(
-                        'Push Notifications',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      value: pushEnabled,
-                      onChanged: (val) {
-                        setState(() => pushEnabled = val);
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // Email Alerts
-                AnimatedInView(
-                  index: 1,
-                  child: AppGlassyCard(
-                    borderColor: Colors.tealAccent, // ✅ Added required param
-                    child: SwitchListTile(
-                      activeColor: Colors.tealAccent,
-                      title: const Text(
-                        'Email Alerts',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      value: emailEnabled,
-                      onChanged: (val) {
-                        setState(() => emailEnabled = val);
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // SMS Alerts
-                AnimatedInView(
-                  index: 2,
-                  child: AppGlassyCard(
-                    borderColor: Colors.tealAccent, // ✅ Added required param
-                    child: SwitchListTile(
-                      activeColor: Colors.tealAccent,
-                      title: const Text(
-                        'SMS Alerts',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      value: smsEnabled,
-                      onChanged: (val) {
-                        setState(() => smsEnabled = val);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        title: Text(
+          'Notification Settings',
+          style: GoogleFonts.barlow(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.purpleAccent,
           ),
+        ),
+        backgroundColor: Colors.black,
+        elevation: 0,
+      ),
+      backgroundColor: Colors.black,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          SwitchListTile(
+            title: Text(
+              'Enable Notifications',
+              style: GoogleFonts.barlow(color: Colors.white),
+            ),
+            value: notificationProvider.notificationsEnabled,
+            onChanged: (value) => notificationProvider.setNotificationsEnabled(value),
+            activeColor: Colors.purpleAccent,
+          ),
+          const Divider(color: Colors.white24),
+          SwitchListTile(
+            title: Text(
+              'Market Alerts',
+              style: GoogleFonts.barlow(color: Colors.white),
+            ),
+            value: notificationProvider.marketAlertsEnabled,
+            onChanged: notificationProvider.notificationsEnabled
+                ? (value) => notificationProvider.setMarketAlertsEnabled(value)
+                : null,
+            activeColor: Colors.purpleAccent,
+          ),
+          const Divider(color: Colors.white24),
+          SwitchListTile(
+            title: Text(
+              'Trade Notifications',
+              style: GoogleFonts.barlow(color: Colors.white),
+            ),
+            value: notificationProvider.tradeNotificationsEnabled,
+            onChanged: notificationProvider.notificationsEnabled
+                ? (value) => notificationProvider.setTradeNotificationsEnabled(value)
+                : null,
+            activeColor: Colors.purpleAccent,
+          ),
+          // Additional notification settings could be added here
         ],
       ),
     );
