@@ -9,14 +9,14 @@ import '../../business_logic/services/api_service.dart';
 class TradePage extends StatefulWidget {
   final String stockSymbol;
 
-  const TradePage({super.key, required this.stockSymbol});
+  const TradePage({super.key, this.stockSymbol = 'AAPL'});
 
   @override
   State<TradePage> createState() => _TradePageState();
 }
 
 class _TradePageState extends State<TradePage> {
-  final ApiService _apiService = ApiService(apiKey: 'dummmy_key');
+  final ApiService _apiService = ApiService(apiKey: 'pk_8824b2eec1059a4db48b8b8f72bb14e0'); // Replace with your actual API key!
   Stock? _stock;
   bool _isLoading = true;
   bool _isCall = true;
@@ -57,9 +57,7 @@ class _TradePageState extends State<TradePage> {
 
   void _placeOrder() {
     if (_stock == null || _quantity <= 0) return;
-    Navigator.of(context).pushNamed(
-      '/order-confirmation/${_stock!.symbol}/$_quantity/$_isCall',
-    );
+    context.go('/order-confirmation/${_stock!.symbol}/$_quantity/$_isCall');
   }
 
   @override
@@ -100,7 +98,10 @@ class _TradePageState extends State<TradePage> {
           child: Text(
             _error!,
             style: const TextStyle(
-                color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+              color: Colors.redAccent,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
@@ -165,8 +166,7 @@ class _TradePageState extends State<TradePage> {
                 ),
                 hintText: 'Enter quantity',
                 hintStyle: const TextStyle(color: Colors.white54),
-                contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
               onChanged: (val) {
                 final q = int.tryParse(val);
@@ -186,8 +186,7 @@ class _TradePageState extends State<TradePage> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -196,9 +195,10 @@ class _TradePageState extends State<TradePage> {
                 child: Text(
                   'Place Order - ₹${(_stock!.price * _quantity).toStringAsFixed(2)}',
                   style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
               ),
             ),

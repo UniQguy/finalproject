@@ -86,7 +86,7 @@ class OrderConfirmationPage extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                   ),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => context.go('/trade/${stock.symbol}'),
                   child: const Text(
                     'Back to Trading',
                     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),

@@ -3,9 +3,10 @@ class AppRoutes {
   static const onboarding = '/onboarding';
   static const login = '/login';
   static const signup = '/signup';
+  static const passwordReset = '/password-reset';
   static const home = '/home';
 
-  static const trade = '/trade';
+  static const trading = '/trading'; // changed from 'trade'
   static const orderConfirmation = '/order-confirmation';
 
   static const portfolio = '/portfolio';
@@ -22,5 +23,4 @@ class AppRoutes {
   static const appearanceSettings = '/appearance-settings';
   static const notificationSettings = '/notification-settings';
   static const notificationDetail = '/notification-detail';
-  static const passwordReset = '/password-reset';
 }

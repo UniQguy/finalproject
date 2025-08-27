@@ -1,133 +1,360 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+import '../../business_logic/providers/market_provider.dart';
+import '../../business_logic/models/stock.dart';
 
 class AnimatedRealtimeChart extends StatefulWidget {
-  final String stockSymbol;
-  final bool isCallOption;
   final Color accentColor;
+  final String? initialSymbol;
+  final ValueChanged<String>? onSymbolChanged;
 
   const AnimatedRealtimeChart({
-    Key? key,
-    required this.stockSymbol,
-    required this.isCallOption,
+    super.key,
     required this.accentColor,
-  }) : super(key: key);
+    this.initialSymbol,
+    this.onSymbolChanged,
+  });
 
   @override
-  _AnimatedRealtimeChartState createState() => _AnimatedRealtimeChartState();
+  State<AnimatedRealtimeChart> createState() => _AnimatedRealtimeChartState();
 }
 
-class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late List<FlSpot> spots;
-  late Color glowColor;
+class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with SingleTickerProviderStateMixin {
+  late String selectedSymbol;
+  List<double> prices = [];
+  List<FlSpot> spots = [];
+  int touchedIndex = -1;
+  late final AnimationController _pulseController;
 
   @override
   void initState() {
     super.initState();
 
-    glowColor = widget.isCallOption ? Colors.greenAccent : Colors.redAccent;
+    selectedSymbol = widget.initialSymbol ?? '';
 
-    _animationController = AnimationController(
+    _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
 
-    // Generate smooth oscillating sample data points simulating live data
-    spots = List.generate(
-      30,
-          (index) => FlSpot(
-        index.toDouble(),
-        50 + 10 * sin(index * pi / 15),
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final marketProvider = context.read<MarketProvider>();
+      marketProvider.addListener(_updatePrices);
+    });
+
+    _updatePrices();
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedRealtimeChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.initialSymbol != null && widget.initialSymbol != selectedSymbol) {
+      selectedSymbol = widget.initialSymbol!;
+      _updatePrices();
+    }
+  }
+
+  void _updatePrices() {
+    if (selectedSymbol.isEmpty) return;
+
+    final marketProvider = context.read<MarketProvider>();
+    final stock = marketProvider.stocks.firstWhere(
+          (s) => s.symbol == selectedSymbol,
+      orElse: () => Stock(
+        symbol: selectedSymbol,
+        company: '',
+        price: 0,
+        previousClose: 0,
+        recentPrices: [],
       ),
     );
+
+    setState(() {
+      prices = stock.recentPrices.isNotEmpty ? stock.recentPrices : _simulatePrices();
+      spots = List.generate(prices.length, (i) => FlSpot(i.toDouble(), prices[i]));
+      touchedIndex = -1;
+    });
+  }
+
+  List<double> _simulatePrices() {
+    final rand = Random();
+    return List.generate(30, (i) => 100 + 10 * sin(i * pi / 15) + rand.nextDouble() * 4 - 2);
+  }
+
+  void _onSymbolChanged(String? newSymbol) {
+    if (newSymbol == null) return;
+
+    if (newSymbol != selectedSymbol) {
+      setState(() {
+        selectedSymbol = newSymbol;
+        touchedIndex = -1;
+      });
+
+      _updatePrices();
+
+      widget.onSymbolChanged?.call(newSymbol);
+    }
+  }
+
+  void _onTouchCallback(FlTouchEvent event, LineTouchResponse? touch) {
+    if (touch == null || touch.lineBarSpots == null || touch.lineBarSpots!.isEmpty) {
+      setState(() => touchedIndex = -1);
+      return;
+    }
+
+    final index = touch.lineBarSpots!.first.spotIndex;
+    if (index != touchedIndex) {
+      HapticFeedback.lightImpact();
+      setState(() => touchedIndex = index);
+    }
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    final marketProvider = context.read<MarketProvider>();
+    marketProvider.removeListener(_updatePrices);
+    _pulseController.dispose();
     super.dispose();
-  }
-
-  LinearGradient _glowGradient(double animationValue) {
-    return LinearGradient(
-      colors: [
-        glowColor.withOpacity(0.3),
-        glowColor,
-        glowColor.withOpacity(0.3),
-      ],
-      stops: [
-        (animationValue - 0.2).clamp(0.0, 1.0),
-        animationValue.clamp(0.0, 1.0),
-        (animationValue + 0.2).clamp(0.0, 1.0),
-      ],
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
+    final scale = MediaQuery.of(context).size.width / 900;
+    final marketProvider = context.watch<MarketProvider>();
+    final glowColor = widget.accentColor;
+
+    final minY = prices.isNotEmpty ? prices.reduce(min) * 0.95 : 0.0;
+    final maxY = prices.isNotEmpty ? prices.reduce(max) * 1.05 : 0.0;
+
+    final deltaPrice = (touchedIndex > 0 && touchedIndex < prices.length)
+        ? prices[touchedIndex] - prices[touchedIndex - 1]
+        : 0.0;
+    final deltaPercent = (touchedIndex > 0 && touchedIndex < prices.length && prices[touchedIndex - 1] != 0)
+        ? (deltaPrice / prices[touchedIndex - 1]) * 100
+        : 0.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnimatedBuilder(
-          animation: _animationController,
-          builder: (_, __) {
-            return SizedBox(
-              height: 180,
-              child: LineChart(
-                LineChartData(
-                  minX: 0,
-                  maxX: spots.length - 1.toDouble(),
-                  minY: 30,
-                  maxY: 90,
-                  lineTouchData: LineTouchData(
-                    enabled: true,
-                    handleBuiltInTouches: true,
-                  ),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: spots,
-                      isCurved: true,
-                      barWidth: 4,
-                      isStrokeCapRound: true,
-                      color: glowColor,
-                      gradient: _glowGradient(_animationController.value),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: _glowGradient(_animationController.value),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16 * scale, vertical: 8),
+          child: DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: "Select Stock",
+              labelStyle: TextStyle(color: glowColor, fontWeight: FontWeight.bold),
+              filled: true,
+              fillColor: Colors.black26,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: glowColor)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: glowColor, width: 2)),
+            ),
+            dropdownColor: Colors.grey.shade900,
+            value: selectedSymbol.isEmpty ? null : selectedSymbol,
+            items: marketProvider.stocks.map((stock) {
+              return DropdownMenuItem(
+                value: stock.symbol,
+                child: Text(stock.symbol, style: const TextStyle(color: Colors.white)),
+              );
+            }).toList(),
+            onChanged: _onSymbolChanged,
+          ),
+        ),
+        Expanded(
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: glowColor.withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
                       ),
-                      dotData: FlDotData(show: false),
-                    ),
-                  ],
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    horizontalInterval: 10,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.white.withOpacity(0.1),
-                        strokeWidth: 1,
-                      );
-                    },
+                    ],
                   ),
-                  borderData: FlBorderData(show: false),
-                  titlesData: FlTitlesData(show: false),
+                  child: LineChart(
+                    LineChartData(
+                      minX: 0,
+                      maxX: prices.isNotEmpty ? (prices.length - 1).toDouble() : 30.0,
+                      minY: minY,
+                      maxY: maxY,
+                      clipData: FlClipData.all(),
+                      lineTouchData: LineTouchData(
+                        enabled: true,
+                        touchCallback: _onTouchCallback,
+                        handleBuiltInTouches: true,
+                        touchTooltipData: LineTouchTooltipData(
+                          tooltipRoundedRadius: 12,
+                          tooltipBgColor: glowColor.withOpacity(double.parse((0.8).toStringAsFixed(3))),
+                          getTooltipItems: (spots) {
+                            return spots.map((spot) => LineTooltipItem(
+                              spot.y.toStringAsFixed(2),
+                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            )).toList();
+                          },
+                        ),
+                        touchSpotThreshold: 20.0,
+                      ),
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: spots,
+                          isCurved: true,
+                          color: glowColor,
+                          barWidth: 4,
+                          isStrokeCapRound: true,
+                          belowBarData: BarAreaData(
+                            show: true,
+                            gradient: LinearGradient(
+                              colors: [
+                                glowColor.withOpacity(double.parse((0.3).toStringAsFixed(3))),
+                                glowColor.withOpacity(double.parse((0.8).toStringAsFixed(3))),
+                                glowColor.withOpacity(double.parse((0.3).toStringAsFixed(3))),
+                              ],
+                              stops: const [0.2, 0.5, 0.8],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                          dotData: FlDotData(
+                            show: true,
+                            getDotPainter: (spot, percent, bar, index) {
+                              final isNewest = index == spots.length - 1;
+                              final double pulse = isNewest ? 7.0 + 3.0 * _pulseController.value : 6.0;
+                              final double opacity = isNewest ? 0.8 + 0.2 * _pulseController.value : 1.0;
+                              return FlDotCirclePainter(
+                                radius: pulse,
+                                color: glowColor.withOpacity(double.parse(opacity.toStringAsFixed(3))),
+                                strokeWidth: isNewest ? 3.0 : 2.0,
+                                strokeColor: Colors.white,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: 10.0,
+                        getDrawingHorizontalLine: (val) => FlLine(
+                          color: Colors.white.withOpacity(double.parse((0.15).toStringAsFixed(3))),
+                          strokeWidth: 1.0,
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          axisNameWidget: const Text('Time'),
+                          axisNameSize: 16,
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 5.0,
+                            reservedSize: 28.0,
+                            getTitlesWidget: (val, _) => Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                val.toInt().toString(),
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                            ),
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          axisNameWidget: const Text('Price'),
+                          axisNameSize: 16,
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 10.0,
+                            reservedSize: 42.0,
+                            getTitlesWidget: (val, _) => Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Text(
+                                val.toInt().toString(),
+                                style: const TextStyle(color: Colors.white54),
+                              ),
+                            ),
+                          ),
+                        ),
+                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            );
-          },
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Text(
+                  selectedSymbol.toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: glowColor,
+                    shadows: [
+                      Shadow(
+                        color: glowColor.withOpacity(double.parse((0.7).toStringAsFixed(3))),
+                        blurRadius: 5,
+                        offset: const Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        Text(
-          'HERE IS AnimatedRealtimeChart',
-          style: TextStyle(
-            fontSize: 22,
-            color: glowColor.withOpacity(0.3),
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Current Price: ${prices.isNotEmpty ? prices.last.toStringAsFixed(2) : "--"}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: glowColor,
+                ),
+              ),
+              touchedIndex >= 0 && touchedIndex < prices.length
+                  ? Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Price: ${prices[touchedIndex].toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: glowColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (touchedIndex > 0)
+                    Text(
+                      'Δ: ${deltaPrice.toStringAsFixed(2)} (${deltaPercent.toStringAsFixed(2)}%)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: glowColor.withOpacity(double.parse((0.8).toStringAsFixed(3))),
+                      ),
+                    ),
+                ],
+              )
+                  : Text(
+                'Touch the chart for details',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white54,
+                ),
+              ),
+            ],
           ),
         ),
       ],

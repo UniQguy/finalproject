@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class AnimatedButton extends StatefulWidget {
   final Widget child;
-  final VoidCallback onTap;
+  final VoidCallback? onTap; // Make onTap nullable
 
   const AnimatedButton({
     required this.child,
-    required this.onTap,
+    this.onTap,
     super.key,
   });
 
@@ -23,7 +23,9 @@ class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProvid
 
   void _handleTapUp(TapUpDetails details) {
     setState(() => _pressed = false);
-    widget.onTap();
+    if (widget.onTap != null) {
+      widget.onTap!();
+    }
   }
 
   void _handleTapCancel() {
@@ -33,16 +35,16 @@ class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: _handleTapDown,
-      onTapUp: _handleTapUp,
-      onTapCancel: _handleTapCancel,
+      onTapDown: widget.onTap != null ? _handleTapDown : null,
+      onTapUp: widget.onTap != null ? _handleTapUp : null,
+      onTapCancel: widget.onTap != null ? _handleTapCancel : null,
       child: AnimatedScale(
         scale: _pressed ? 0.95 : 1.0,
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeOut,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          splashColor: Colors.purpleAccent.withOpacity(0.3),
+          splashColor: Colors.purpleAccent.withAlpha((0.3 * 255).toInt()),
           onTap: widget.onTap,
           child: widget.child,
         ),

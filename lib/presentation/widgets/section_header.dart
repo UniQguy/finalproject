@@ -4,12 +4,15 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final double scale;
   final VoidCallback? onViewAll;
+  final TextStyle? titleStyle;
+
 
   const SectionHeader({
     super.key,
     required this.title,
     required this.scale,
     this.onViewAll,
+    this.titleStyle,
   });
 
   @override

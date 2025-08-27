@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../business_logic/providers/market_provider.dart';
 import '../../business_logic/models/stock.dart';
 
-/// Page that displays a scrollable list of market movers with price changes indicated.
 class MarketListPage extends StatelessWidget {
   const MarketListPage({super.key});
 

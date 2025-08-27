@@ -17,36 +17,30 @@ class _NewsPageState extends State<NewsPage> {
   bool isLoading = true;
   bool isError = false;
 
-  final String apiKey = 'dummmy_key'; // <-- Use your actual API key
+  final String apiKey = 'YOUR_API_KEY_HERE'; // Replace with actual API key
 
   @override
   void initState() {
     super.initState();
-    fetchStockNews();
+    fetchNews();
   }
 
-  Future<void> fetchStockNews() async {
+  Future<void> fetchNews() async {
     setState(() {
       isLoading = true;
       isError = false;
     });
 
-    final Uri uri = Uri.parse(
-      'https://finnhub.io/api/v1/news?category=general&token=$apiKey',
-    );
+    final Uri uri = Uri.parse('https://finnhub.io/api/v1/news?category=general&token=$apiKey');
 
     try {
       final response = await http.get(uri);
-
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        // Filter to articles with valid image URLs
-        newsArticles = data.where((article) =>
-        article['image'] != null &&
-            article['image'].toString().isNotEmpty &&
-            Uri.tryParse(article['image']) != null
-        ).toList();
-
+        newsArticles = data.where((article) {
+          final image = article['image'];
+          return image != null && image.toString().isNotEmpty && Uri.tryParse(image) != null;
+        }).toList();
         setState(() {
           isLoading = false;
         });
@@ -56,7 +50,7 @@ class _NewsPageState extends State<NewsPage> {
           isLoading = false;
         });
       }
-    } catch (e) {
+    } catch (_) {
       setState(() {
         isError = true;
         isLoading = false;
@@ -66,18 +60,16 @@ class _NewsPageState extends State<NewsPage> {
 
   Future<void> _openUrl(String? url) async {
     if (url == null) return;
-    final uri = Uri.tryParse(url);
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     }
   }
 
-  String _formatTimestamp(dynamic timestamp) {
+  String _formatTimestamp(int? timestamp) {
     if (timestamp == null) return '';
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    final now = DateTime.now();
-    final diff = now.difference(dateTime);
-
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    Duration diff = DateTime.now().difference(date);
     if (diff.inDays > 1) return '${diff.inDays} days ago';
     if (diff.inDays == 1) return '1 day ago';
     if (diff.inHours >= 1) return '${diff.inHours} hours ago';
@@ -87,7 +79,7 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final double scale = MediaQuery.of(context).size.width / 900;
+    final scale = MediaQuery.of(context).size.width / 900;
 
     if (isLoading) {
       return Scaffold(
@@ -96,25 +88,17 @@ class _NewsPageState extends State<NewsPage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/'), // Back to homepage
-          ),
+          leading: BackButton(onPressed: () => context.go('/home')),
           title: Text(
             'Market News',
             style: GoogleFonts.barlow(
               color: Colors.purpleAccent,
-              fontWeight: FontWeight.bold,
               fontSize: 22 * scale,
-              letterSpacing: 1.2,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(
-            color: Colors.purpleAccent,
-          ),
-        ),
+        body: Center(child: CircularProgressIndicator(color: Colors.purpleAccent)),
       );
     }
 
@@ -125,27 +109,20 @@ class _NewsPageState extends State<NewsPage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => context.go('/home'), // Back to homepage
-          ),
+          leading: BackButton(onPressed: () => context.go('/home')),
           title: Text(
             'Market News',
             style: GoogleFonts.barlow(
               color: Colors.purpleAccent,
-              fontWeight: FontWeight.bold,
               fontSize: 22 * scale,
-              letterSpacing: 1.2,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
         body: Center(
           child: Text(
             'Failed to load news or no valid articles.',
-            style: TextStyle(
-              color: Colors.white54,
-              fontSize: 16 * scale,
-            ),
+            style: TextStyle(color: Colors.white54, fontSize: 16 * scale),
           ),
         ),
       );
@@ -157,55 +134,50 @@ class _NewsPageState extends State<NewsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'), // Back to homepage
-        ),
+        leading: BackButton(onPressed: () => context.go('/home')),
         title: Text(
           'Market News',
           style: GoogleFonts.barlow(
             color: Colors.purpleAccent,
-            fontWeight: FontWeight.bold,
             fontSize: 22 * scale,
-            letterSpacing: 1.2,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: fetchStockNews,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 18 * scale),
-          child: SizedBox(
-            height: 250 * scale,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 16 * scale),
-              itemCount: newsArticles.length,
-              separatorBuilder: (_, __) => SizedBox(width: 16 * scale),
-              itemBuilder: (context, index) {
-                final article = newsArticles[index];
-                return GestureDetector(
-                  onTap: () => _openUrl(article['url'] as String?),
-                  child: Container(
-                    width: 300 * scale,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20 * scale),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF3F1B8A), Colors.black87],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.deepPurple.shade900.withOpacity(0.7),
-                          offset: const Offset(0, 6),
-                          blurRadius: 16,
-                        ),
-                      ],
+        onRefresh: fetchNews,
+        child: SizedBox(
+          height: 250 * scale,
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(horizontal: 16 * scale, vertical: 18),
+            scrollDirection: Axis.horizontal,
+            itemCount: newsArticles.length,
+            separatorBuilder: (_, __) => SizedBox(width: 16 * scale),
+            itemBuilder: (context, index) {
+              final article = newsArticles[index];
+              return GestureDetector(
+                onTap: () => _openUrl(article['url'] as String?),
+                child: Container(
+                  width: 300 * scale,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20 * scale),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF3F1B8A), Colors.black87],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.deepPurple.shade900.withOpacity(0.7),
+                        offset: Offset(0, 6),
+                        blurRadius: 16,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (article['image'] != null && article['image'].toString().isNotEmpty)
                         ClipRRect(
                           borderRadius: BorderRadius.vertical(top: Radius.circular(20 * scale)),
                           child: Image.network(
@@ -213,60 +185,54 @@ class _NewsPageState extends State<NewsPage> {
                             width: double.infinity,
                             height: 110 * scale,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.network(
-                                'https://via.placeholder.com/300x110/3F1B8A/FFFFFF?text=No+Image',
-                                width: double.infinity,
-                                height: 110 * scale,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  article['headline'] ?? 'No title',
-                                  style: GoogleFonts.barlow(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16 * scale,
-                                    color: Colors.white,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(height: 6 * scale),
-                                Text(
-                                  article['summary'] ?? '',
-                                  style: GoogleFonts.barlow(
-                                    fontSize: 13 * scale,
-                                    color: Colors.white70,
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const Spacer(),
-                                Text(
-                                  _formatTimestamp(article['datetime']),
-                                  style: GoogleFonts.barlow(
-                                    fontSize: 11 * scale,
-                                    color: Colors.white38,
-                                  ),
-                                ),
-                              ],
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              height: 110 * scale,
+                              color: Colors.grey.shade800,
+                              child: Icon(Icons.broken_image, color: Colors.white24, size: 40),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      Padding(
+                        padding: EdgeInsets.all(12 * scale),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              article['headline'] ?? 'No title',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.barlow(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16 * scale,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 6 * scale),
+                            Text(
+                              article['summary'] ?? '',
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.barlow(
+                                fontSize: 13 * scale,
+                                color: Colors.white70,
+                              ),
+                            ),
+                            Spacer(),
+                            Text(
+                              _formatTimestamp(article['datetime']),
+                              style: GoogleFonts.barlow(
+                                fontSize: 11 * scale,
+                                color: Colors.white38,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),

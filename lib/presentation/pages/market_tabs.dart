@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// A horizontally scrollable list of market category tabs with neon gradient selection.
-/// Includes a callback for external tab selection notification.
 class MarketTabs extends StatefulWidget {
-  final ValueChanged<int>? onTabChanged; // Optional callback for tab change
+  final ValueChanged<int>? onTabChanged;
 
   const MarketTabs({super.key, this.onTabChanged});
 
@@ -20,9 +18,7 @@ class _MarketTabsState extends State<MarketTabs> with SingleTickerProviderStateM
     setState(() {
       selectedIndex = index;
     });
-    if (widget.onTabChanged != null) {
-      widget.onTabChanged!(index);
-    }
+    widget.onTabChanged?.call(index);
   }
 
   @override

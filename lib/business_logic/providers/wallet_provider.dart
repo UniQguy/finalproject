@@ -1,30 +1,27 @@
 import 'package:flutter/foundation.dart';
 
-/// Manages user's virtual wallet balance with deposit and withdrawal operations.
+/// Manages user's virtual wallet balance with add and deduct operations.
 class WalletProvider extends ChangeNotifier {
-  /// Initial wallet balance for new users (₹100,000).
   static const double initialBalance = 100000.0;
 
   double _balance = initialBalance;
 
-  /// Returns the current wallet balance.
+  /// Current wallet balance getter
   double get balance => _balance;
 
   WalletProvider();
 
-  /// Deposits the given [amount] into wallet.
-  ///
-  /// Does nothing if [amount] is non-positive.
-  void deposit(double amount) {
+  /// Adds given amount to wallet balance if positive.
+  void add(double amount) {
     if (amount <= 0) return;
     _balance += amount;
     notifyListeners();
   }
 
-  /// Withdraws the given [amount] from wallet if sufficient balance is available.
+  /// Deducts given amount from balance if sufficient funds exist.
   ///
-  /// Returns `true` if the withdrawal succeeded, `false` otherwise.
-  bool withdraw(double amount) {
+  /// Returns true if deduction succeeded, false if balance insufficient or invalid amount.
+  bool deduct(double amount) {
     if (amount <= 0 || amount > _balance) return false;
     _balance -= amount;
     notifyListeners();
@@ -32,7 +29,7 @@ class WalletProvider extends ChangeNotifier {
   }
 
   /// Resets wallet balance to initial default value.
-  void resetWallet() {
+  void reset() {
     _balance = initialBalance;
     notifyListeners();
   }

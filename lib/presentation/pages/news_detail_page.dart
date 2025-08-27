@@ -2,26 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
-/// Detailed page showing full news article with title, time, and image.
 class NewsDetailPage extends StatelessWidget {
   final String title;
-  final String summary;
   final String time;
   final String imageUrl;
   final String fullArticle;
+  final String summary;
 
   const NewsDetailPage({
     super.key,
     required this.title,
-    required this.summary,
     required this.time,
     required this.imageUrl,
     required this.fullArticle,
+    required this.summary,
   });
 
   @override
   Widget build(BuildContext context) {
-    final double scale = MediaQuery.of(context).size.width / 900;
+    final scale = MediaQuery.of(context).size.width / 900;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -29,6 +28,7 @@ class NewsDetailPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
+        leading: BackButton(onPressed: () => context.go('/home')),
         title: Text(
           'News Detail',
           style: GoogleFonts.barlow(
@@ -36,10 +36,6 @@ class NewsDetailPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 22 * scale,
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'), // Back to homepage
         ),
       ),
       body: ListView(
@@ -59,10 +55,6 @@ class NewsDetailPage extends StatelessWidget {
                     height: 220 * scale,
                     child: Center(
                       child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                            : null,
                         color: Colors.purpleAccent,
                       ),
                     ),
@@ -86,14 +78,22 @@ class NewsDetailPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 24 * scale,
               color: Colors.white,
+              shadows: [
+                Shadow(
+                  color: Colors.black54,
+                  offset: Offset(0, 2),
+                  blurRadius: 4,
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 12 * scale),
+          SizedBox(height: 8 * scale),
           Text(
             time,
             style: GoogleFonts.barlow(
-              fontSize: 12 * scale,
               color: Colors.purpleAccent,
+              fontWeight: FontWeight.w600,
+              fontSize: 12 * scale,
             ),
           ),
           SizedBox(height: 24 * scale),
@@ -101,10 +101,29 @@ class NewsDetailPage extends StatelessWidget {
             fullArticle,
             style: GoogleFonts.barlow(
               fontSize: 16 * scale,
-              color: Colors.white70,
               height: 1.5,
+              color: Colors.white70,
             ),
           ),
+          if (summary.isNotEmpty) ...[
+            SizedBox(height: 24 * scale),
+            Text(
+              'Summary',
+              style: GoogleFonts.barlow(
+                fontSize: 16 * scale,
+                fontWeight: FontWeight.bold,
+                color: Colors.purpleAccent,
+              ),
+            ),
+            SizedBox(height: 8 * scale),
+            Text(
+              summary,
+              style: GoogleFonts.barlow(
+                fontSize: 14 * scale,
+                color: Colors.white60,
+              ),
+            ),
+          ],
         ],
       ),
     );

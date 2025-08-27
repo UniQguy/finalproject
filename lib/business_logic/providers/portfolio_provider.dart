@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../models/trade_order.dart';
 
 /// Manages the user's portfolio holdings and trade history.
 class PortfolioProvider extends ChangeNotifier {
-  // Maps stock symbol to latest aggregated TradeOrder representing current holdings.
+  /// Maps stock symbol to latest aggregated TradeOrder representing current holdings.
   final Map<String, TradeOrder> _holdings = {};
 
-  // Complete list of all executed trade orders, in chronological order.
+  /// Complete list of all executed trade orders, in chronological order.
   final List<TradeOrder> _tradeHistory = [];
 
   /// Read-only access to chronological past trade orders.
@@ -26,27 +26,32 @@ class PortfolioProvider extends ChangeNotifier {
 
   /// Adds a new trade order to the history and updates holdings accordingly.
   ///
-  /// This method currently aggregates quantities for simplicity.
-  /// For more complex scenarios, incorporate buy/sell logic.
+  /// This method supports simple aggregation: buy adds quantity, sell subtracts quantity.
+  /// Holdings with zero or negative quantity are removed.
   void addOrder(TradeOrder order) {
+    // Add to trade history list
     _tradeHistory.add(order);
 
-    if (_holdings.containsKey(order.stockSymbol)) {
-      final existing = _holdings[order.stockSymbol]!;
+    // Get current holding quantity
+    final existing = _holdings[order.stockSymbol];
+    int newQuantity = order.type == OrderType.call
+        ? (existing?.quantity ?? 0) + order.quantity
+        : (existing?.quantity ?? 0) - order.quantity;
 
-      // Aggregate quantity - expand per your trade logic.
-      final newQuantity = existing.quantity + order.quantity;
-
+    // Remove holding if quantity zero or negative
+    if (newQuantity <= 0) {
+      _holdings.remove(order.stockSymbol);
+    } else {
+      // Update holdings map with new aggregate order
       _holdings[order.stockSymbol] = TradeOrder(
         stockSymbol: order.stockSymbol,
         quantity: newQuantity,
-        price: order.price,
-        type: order.type,
+        price: order.price, // Optionally improve with average price computation
+        type: OrderType.call, // Holdings type is call by default as positive quantity means owned shares
         timestamp: order.timestamp,
       );
-    } else {
-      _holdings[order.stockSymbol] = order;
     }
+
     notifyListeners();
   }
 

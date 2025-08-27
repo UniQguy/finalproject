@@ -5,11 +5,10 @@ import '../widgets/app_glassy_card.dart';
 class MarketMoversWidget extends StatelessWidget {
   final double scale;
 
-  const MarketMoversWidget({super.key, required this.scale});
+  const MarketMoversWidget({Key? key, required this.scale}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Sample movers data with price change percentage
     final List<Map<String, dynamic>> movers = [
       {'symbol': 'TCS', 'price': 4300.50, 'change': 1.5},
       {'symbol': 'RELIANCE', 'price': 2490.75, 'change': -0.8},
@@ -47,9 +46,7 @@ class MarketMoversWidget extends StatelessWidget {
                         fontSize: 20 * scale,
                         shadows: [
                           Shadow(
-                            color: positive
-                                ? Colors.greenAccent.withOpacity(0.5)
-                                : Colors.redAccent.withOpacity(0.5),
+                            color: (positive ? Colors.greenAccent : Colors.redAccent).withOpacity(0.5),
                             blurRadius: 12,
                           ),
                         ],
@@ -73,16 +70,14 @@ class MarketMoversWidget extends StatelessWidget {
                           size: 18 * scale,
                           shadows: [
                             Shadow(
-                              color: positive
-                                  ? Colors.greenAccent.withOpacity(0.8)
-                                  : Colors.redAccent.withOpacity(0.8),
+                              color: (positive ? Colors.greenAccent : Colors.redAccent).withOpacity(0.8),
                               blurRadius: 12,
                             ),
                           ],
                         ),
                         SizedBox(width: 6 * scale),
                         Text(
-                          '${positive ? "+" : ""}${mover['change'].toStringAsFixed(2)}%',
+                          '${positive ? '+' : ''}${mover['change'].toStringAsFixed(2)}%',
                           style: TextStyle(
                             color: positive ? Colors.greenAccent : Colors.redAccent,
                             fontWeight: FontWeight.bold,

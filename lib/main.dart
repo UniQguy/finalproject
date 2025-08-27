@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'app.dart';
+import 'app.dart'; // Your main app widget containing MaterialApp.router or equivalent
 import 'firebase_options.dart';
 
 import 'business_logic/providers/auth_provider.dart';
@@ -14,7 +14,7 @@ import 'business_logic/providers/theme_provider.dart';
 import 'business_logic/providers/wallet_provider.dart';
 import 'business_logic/providers/watchlist_provider.dart';
 
-// Your Finnhub API key
+// Your Finnhub API key for MarketProvider
 const String finnhubApiKey = 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20';
 
 Future<void> main() async {

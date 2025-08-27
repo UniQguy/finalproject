@@ -9,7 +9,7 @@ import '../../business_logic/providers/wallet_provider.dart';
 class TradeDialog extends StatefulWidget {
   final Stock stock;
 
-  const TradeDialog({Key? key, required this.stock}) : super(key: key);
+  const TradeDialog({super.key, required this.stock}); // super parameter style
 
   @override
   State<TradeDialog> createState() => _TradeDialogState();
@@ -49,24 +49,24 @@ class _TradeDialogState extends State<TradeDialog> {
 
     final totalPrice = widget.stock.price * qty;
 
-    if (orderType == 'Buy' && totalPrice > wallet.balance) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Insufficient wallet balance')),
-      );
-      return;
-    }
-
     if (orderType == 'Buy') {
-      final success = wallet.withdraw(totalPrice);
+      if (totalPrice > wallet.balance) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Insufficient wallet balance')),
+        );
+        return;
+      }
+      final success = wallet.deduct(totalPrice);
       if (!success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to withdraw from wallet')),
+          const SnackBar(content: Text('Failed to deduct from wallet')),
         );
         return;
       }
     } else {
-      // TODO: Implement portfolio holdings check before selling
-      // Possibly check if user owns enough shares to sell
+      // TODO: Implement portfolio holdings check before selling (future enhancement)
+      // For now, sell will always succeed and add money.
+      wallet.add(totalPrice);
     }
 
     portfolio.addOrder(TradeOrder(
