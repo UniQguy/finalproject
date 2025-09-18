@@ -33,53 +33,59 @@ class PortfolioPage extends StatelessWidget {
         ),
       ),
       backgroundColor: Colors.black,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: holdings.isEmpty
-            ? Center(
-          child: Text(
-            'No holdings yet.',
-            style: GoogleFonts.barlow(
-              color: Colors.white70,
-              fontSize: 18,
-            ),
-          ),
-        )
-            : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Total Value: ₹${totalValue.toStringAsFixed(2)}',
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: holdings.isEmpty
+              ? Center(
+            child: Text(
+              'No holdings yet.',
               style: GoogleFonts.barlow(
-                color: Colors.purpleAccent,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+                color: Colors.white70,
+                fontSize: 18,
               ),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.separated(
-                itemCount: holdings.length,
-                separatorBuilder: (_, __) => const Divider(color: Colors.white24),
-                itemBuilder: (context, index) {
-                  final TradeOrder order = holdings[index];
-                  return _PortfolioItem(order: order);
-                },
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purpleAccent,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                textStyle: GoogleFonts.barlow(
-                  fontSize: 18,
+          )
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Total Value: ₹${totalValue.toStringAsFixed(2)}',
+                style: GoogleFonts.barlow(
+                  color: Colors.purpleAccent,
                   fontWeight: FontWeight.bold,
+                  fontSize: 24,
                 ),
               ),
-              onPressed: () => portfolioProvider.clearPortfolio(),
-              child: const Text('Clear Portfolio'),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: holdings.length,
+                  separatorBuilder: (_, __) =>
+                  const Divider(color: Colors.white24),
+                  itemBuilder: (context, index) {
+                    final TradeOrder order = holdings[index];
+                    return _PortfolioItem(order: order);
+                  },
+                ),
+              ),
+              SafeArea(
+                top: false,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purpleAccent,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    textStyle: GoogleFonts.barlow(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () => portfolioProvider.clearPortfolio(),
+                  child: const Text('Clear Portfolio'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -5,8 +5,13 @@ class AppRoutes {
   static const signup = '/signup';
   static const passwordReset = '/password-reset';
   static const home = '/home';
+  static const orders = '/orders';
 
-  static const trading = '/trading'; // changed from 'trade'
+
+  static const trading = '/trade';
+  static const stockComparison = '/stock-comparison';
+
+
   static const orderConfirmation = '/order-confirmation';
 
   static const portfolio = '/portfolio';

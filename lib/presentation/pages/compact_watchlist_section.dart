@@ -25,7 +25,7 @@ class CompactWatchlistSection extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 240 * scale,
+      height: 240 * scale, // Fixed height to prevent overflow
       child: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 8 * scale),
         itemCount: watchlist.length,
@@ -57,8 +57,11 @@ class CompactWatchlistSection extends StatelessWidget {
               ),
             ),
             onTap: () {
-              // Implement watchlist stock tap handler, e.g. navigate to stock detail
+              // TODO: Implement watchlist stock tap handler, e.g. navigate to stock detail
             },
+            contentPadding: EdgeInsets.symmetric(vertical: 4 * scale, horizontal: 8 * scale),
+            dense: true,
+            horizontalTitleGap: 12 * scale,
           );
         },
       ),

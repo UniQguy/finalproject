@@ -20,7 +20,7 @@ class _StockChartSectionState extends State<StockChartSection> {
   @override
   void initState() {
     super.initState();
-    // Simulate loading delay for shimmer effect placeholder
+    // Deliberate delay to simulate data loading and show shimmer effect
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -31,15 +31,22 @@ class _StockChartSectionState extends State<StockChartSection> {
   @override
   Widget build(BuildContext context) {
     final double scale = widget.scale;
+
     final marketProvider = context.watch<MarketProvider>();
     final stocks = marketProvider.stocks;
 
     final hasData = stocks.isNotEmpty;
-    final minPrice = hasData ? stocks.map((s) => s.price).reduce((a, b) => a < b ? a : b) : 0.0;
-    final maxPrice = hasData ? stocks.map((s) => s.price).reduce((a, b) => a > b ? a : b) : 0.0;
-    final priceRange = maxPrice - minPrice;
+
+    // If no data or empty, we prepare defaults to avoid errors in chart rendering
+    final double minPrice =
+    hasData ? stocks.map((s) => s.price).reduce((a, b) => a < b ? a : b) : 0;
+    final double maxPrice =
+    hasData ? stocks.map((s) => s.price).reduce((a, b) => a > b ? a : b) : 0;
+    final double priceRange = maxPrice - minPrice;
 
     return Container(
+      height: 280 * scale,
+      padding: EdgeInsets.all(20 * scale),
       decoration: BoxDecoration(
         color: Colors.white10,
         borderRadius: BorderRadius.circular(24 * scale),
@@ -48,11 +55,9 @@ class _StockChartSectionState extends State<StockChartSection> {
             color: Colors.purpleAccent.withOpacity(0.14),
             blurRadius: 24,
             offset: const Offset(0, 9),
-          ),
+          )
         ],
       ),
-      padding: EdgeInsets.all(20 * scale),
-      height: 280 * scale,
       child: _isLoading
           ? Shimmer(
         duration: const Duration(seconds: 2),
@@ -71,31 +76,37 @@ class _StockChartSectionState extends State<StockChartSection> {
           ? Center(
         child: Text(
           'No stock data available',
-          style: TextStyle(color: Colors.white54, fontSize: 18 * scale),
+          style: TextStyle(
+            color: Colors.white54,
+            fontSize: 18 * scale,
+          ),
         ),
       )
           : LineChart(
         LineChartData(
           backgroundColor: Colors.transparent,
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            horizontalInterval: priceRange > 0 ? priceRange / 5 : 1,
-            getDrawingHorizontalLine: (value) =>
-                FlLine(color: Colors.white12, strokeWidth: 1),
-          ),
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(show: false),
           minX: 0,
           maxX: stocks.length - 1.toDouble(),
           minY: minPrice,
           maxY: maxPrice,
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            horizontalInterval: priceRange > 0 ? priceRange / 5 : 1,
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: Colors.white12,
+              strokeWidth: 1,
+            ),
+          ),
+          borderData: FlBorderData(show: false),
+          titlesData: FlTitlesData(show: false),
           lineBarsData: [
             LineChartBarData(
               spots: List.generate(
-                  stocks.length,
-                      (index) =>
-                      FlSpot(index.toDouble(), stocks[index].price)),
+                stocks.length,
+                    (index) =>
+                    FlSpot(index.toDouble(), stocks[index].price),
+              ),
               isCurved: true,
               curveSmoothness: 0.3,
               gradient: const LinearGradient(

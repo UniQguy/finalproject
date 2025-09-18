@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/app_glassy_card.dart';
 
-/// A stylish balance card showing portfolio summary with deposit and withdraw actions.
+/// A stylish balance card showing portfolio summary without deposit and withdraw actions.
 class BalanceCard extends StatelessWidget {
   final double scale;
 
@@ -61,53 +61,7 @@ class BalanceCard extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 24 * scale,
-                vertical: 14 * scale,
-              ),
-              textStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16 * scale,
-              ),
-              elevation: 6,
-              shadowColor: Colors.greenAccent.withOpacity(0.6),
-            ),
-            onPressed: () {
-              // TODO: Implement deposit action
-            },
-            child: const Text('Deposit'),
-          ),
-          SizedBox(width: 16 * scale),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade700,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 24 * scale,
-                vertical: 14 * scale,
-              ),
-              textStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16 * scale,
-              ),
-              elevation: 6,
-              shadowColor: Colors.redAccent.withOpacity(0.6),
-            ),
-            onPressed: () {
-              // TODO: Implement withdraw action
-            },
-            child: const Text('Withdraw'),
-          ),
+          // Removed Deposit and Withdraw buttons as per requirements
         ],
       ),
     );

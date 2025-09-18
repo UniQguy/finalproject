@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
-class StockChartPage extends StatelessWidget {
+class StockChartPage extends StatefulWidget {
   final String stockSymbol;
   final List<double> prices;
 
@@ -13,6 +13,21 @@ class StockChartPage extends StatelessWidget {
     required this.stockSymbol,
     this.prices = const [150, 152, 148, 154, 156, 158, 160],
   });
+
+  @override
+  State<StockChartPage> createState() => _StockChartPageState();
+}
+
+class _StockChartPageState extends State<StockChartPage> {
+  late List<double> currentPrices;
+  String selectedPeriod = '1D';
+
+  @override
+  void initState() {
+    super.initState();
+    currentPrices = widget.prices;
+    // TODO: Load actual data based on stockSymbol and initial period selected (1D)
+  }
 
   double _responsiveScale(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -23,19 +38,28 @@ class StockChartPage extends StatelessWidget {
     return 0.7;
   }
 
+  void _onPeriodSelected(String period) {
+    setState(() {
+      selectedPeriod = period;
+      // TODO: Fetch and update currentPrices based on the selected period
+      // Example: currentPrices = fetchPrices(stockSymbol, period);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double scale = _responsiveScale(context);
 
+    final prices = currentPrices;
     final double lastPrice = prices.isNotEmpty ? prices.last : 0;
     final double prevPrice = prices.length > 1 ? prices[prices.length - 2] : lastPrice;
     final double change = lastPrice - prevPrice;
     final bool positive = change >= 0;
     final double percentChange = prevPrice != 0 ? (change / prevPrice) * 100 : 0;
 
-    double yMin = prices.isNotEmpty ? prices.reduce(min) : 0;
-    double yMax = prices.isNotEmpty ? prices.reduce(max) : 0;
-    double yRange = yMax - yMin;
+    final double yMin = prices.isNotEmpty ? prices.reduce(min) : 0;
+    final double yMax = prices.isNotEmpty ? prices.reduce(max) : 0;
+    final double yRange = yMax - yMin;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,11 +71,11 @@ class StockChartPage extends StatelessWidget {
             color: Colors.deepPurpleAccent,
             size: 24 * scale,
           ),
-          onPressed: () => context.go('/home'),  // Back to homepage
+          onPressed: () => context.go('/home'),
           splashRadius: 22,
         ),
         title: Text(
-          stockSymbol,
+          widget.stockSymbol,
           style: GoogleFonts.barlow(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -86,7 +110,7 @@ class StockChartPage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Icon(
@@ -110,7 +134,7 @@ class StockChartPage extends StatelessWidget {
               child: LineChart(
                 LineChartData(
                   minX: 0,
-                  maxX: prices.length > 0 ? (prices.length - 1).toDouble() : 0,
+                  maxX: prices.isNotEmpty ? (prices.length - 1).toDouble() : 0,
                   minY: yMin * 0.95,
                   maxY: yMax * 1.05,
                   gridData: FlGridData(
@@ -169,10 +193,8 @@ class StockChartPage extends StatelessWidget {
               children: ['1D', '5D', '1M', '6M', 'YTD', '1Y', '5Y', 'MAX']
                   .map((period) => _PeriodButton(
                 label: period,
-                isSelected: period == '1D',
-                onTap: () {
-                  // TODO: Implement period selection and update chart data
-                },
+                isSelected: period == selectedPeriod,
+                onTap: () => _onPeriodSelected(period),
               ))
                   .toList(),
             ),

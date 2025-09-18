@@ -28,7 +28,16 @@ class NewsDetailPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: BackButton(onPressed: () => context.go('/home')),
+        leading: BackButton(
+          onPressed: () {
+            if (GoRouter.of(context).canPop()) {
+              GoRouter.of(context).pop();
+            } else {
+              context.go('/home');
+            }
+          },
+
+        ),
         title: Text(
           'News Detail',
           style: GoogleFonts.barlow(
@@ -42,49 +51,56 @@ class NewsDetailPage extends StatelessWidget {
         padding: EdgeInsets.all(18 * scale),
         children: [
           if (imageUrl.isNotEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20 * scale),
-              child: Image.network(
-                imageUrl,
-                height: 220 * scale,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return SizedBox(
-                    height: 220 * scale,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.purpleAccent,
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
+            Semantics(
+              label: 'Article image',
+              image: true,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20 * scale),
+                child: Image.network(
+                  imageUrl,
                   height: 220 * scale,
-                  color: Colors.white12,
-                  child: Icon(
-                    Icons.broken_image,
-                    color: Colors.white24,
-                    size: 48 * scale,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return SizedBox(
+                      height: 220 * scale,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.purpleAccent,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 220 * scale,
+                    color: Colors.white12,
+                    child: Icon(
+                      Icons.broken_image,
+                      color: Colors.white24,
+                      size: 48 * scale,
+                    ),
                   ),
                 ),
               ),
             ),
           SizedBox(height: 24 * scale),
-          Text(
-            title,
-            style: GoogleFonts.barlow(
-              fontWeight: FontWeight.bold,
-              fontSize: 24 * scale,
-              color: Colors.white,
-              shadows: [
-                Shadow(
-                  color: Colors.black54,
-                  offset: Offset(0, 2),
-                  blurRadius: 4,
-                ),
-              ],
+          Semantics(
+            header: true,
+            child: Text(
+              title,
+              style: GoogleFonts.barlow(
+                fontWeight: FontWeight.bold,
+                fontSize: 24 * scale,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: Colors.black54,
+                    offset: Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: 8 * scale),

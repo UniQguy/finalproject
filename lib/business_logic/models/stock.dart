@@ -57,4 +57,16 @@ class Stock {
   String toString() {
     return 'Stock(symbol: $symbol, company: $company, price: $price, previousClose: $previousClose, recentPrices: $recentPrices)';
   }
+
+  // Add these to fix DropdownButton equality issue:
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Stock &&
+              runtimeType == other.runtimeType &&
+              symbol == other.symbol;
+
+  @override
+  int get hashCode => symbol.hashCode;
 }

@@ -5,19 +5,45 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 
+class NewsArticle {
+  final String headline;
+  final String summary;
+  final String imageUrl;
+  final String url;
+  final int? datetime;
+
+  NewsArticle({
+    required this.headline,
+    required this.summary,
+    required this.imageUrl,
+    required this.url,
+    this.datetime,
+  });
+
+  factory NewsArticle.fromJson(Map<String, dynamic> json) {
+    return NewsArticle(
+      headline: json['headline'] ?? 'No title',
+      summary: json['summary'] ?? '',
+      imageUrl: json['image'] ?? '',
+      url: json['url'] ?? '',
+      datetime: json['datetime'] is int ? json['datetime'] : null,
+    );
+  }
+}
+
 class NewsPage extends StatefulWidget {
-  const NewsPage({Key? key}) : super(key: key);
+  final String apiKey;
+
+  const NewsPage({Key? key, required this.apiKey}) : super(key: key);
 
   @override
   State<NewsPage> createState() => _NewsPageState();
 }
 
 class _NewsPageState extends State<NewsPage> {
-  List<dynamic> newsArticles = [];
+  List<NewsArticle> newsArticles = [];
   bool isLoading = true;
   bool isError = false;
-
-  final String apiKey = 'YOUR_API_KEY_HERE'; // Replace with actual API key
 
   @override
   void initState() {
@@ -31,17 +57,35 @@ class _NewsPageState extends State<NewsPage> {
       isError = false;
     });
 
-    final Uri uri = Uri.parse('https://finnhub.io/api/v1/news?category=general&token=$apiKey');
-
+    final Uri uri = Uri.parse(
+      'https://finnhub.io/api/v1/news?category=general&token=${widget.apiKey}',
+    );
     try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        newsArticles = data.where((article) {
-          final image = article['image'];
-          return image != null && image.toString().isNotEmpty && Uri.tryParse(image) != null;
-        }).toList();
+        final body = response.body.trim();
+        // Defensive: only parse non-empty, non-null, non-error responses
+        if (body.isNotEmpty) {
+          final List<dynamic>? data = jsonDecode(body) is List ? jsonDecode(body) : null;
+          if (data != null && data.isNotEmpty) {
+            final articles = data
+                .map((e) => NewsArticle.fromJson(e as Map<String, dynamic>))
+                .where((article) =>
+            article.imageUrl.isNotEmpty &&
+                Uri.tryParse(article.imageUrl) != null &&
+                article.headline.isNotEmpty &&
+                article.url.isNotEmpty)
+                .toList();
+            setState(() {
+              newsArticles = articles;
+              isLoading = false;
+            });
+            return;
+          }
+        }
+        // Response body is empty or not an array
         setState(() {
+          newsArticles = [];
           isLoading = false;
         });
       } else {
@@ -50,7 +94,7 @@ class _NewsPageState extends State<NewsPage> {
           isLoading = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
       setState(() {
         isError = true;
         isLoading = false;
@@ -58,18 +102,21 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-  Future<void> _openUrl(String? url) async {
-    if (url == null) return;
+  Future<void> _openUrl(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch the article URL')),
+      );
     }
   }
 
   String _formatTimestamp(int? timestamp) {
     if (timestamp == null) return '';
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    Duration diff = DateTime.now().difference(date);
+    final date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    final diff = DateTime.now().difference(date);
     if (diff.inDays > 1) return '${diff.inDays} days ago';
     if (diff.inDays == 1) return '1 day ago';
     if (diff.inHours >= 1) return '${diff.inHours} hours ago';
@@ -79,54 +126,7 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = MediaQuery.of(context).size.width / 900;
-
-    if (isLoading) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          leading: BackButton(onPressed: () => context.go('/home')),
-          title: Text(
-            'Market News',
-            style: GoogleFonts.barlow(
-              color: Colors.purpleAccent,
-              fontSize: 22 * scale,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        body: Center(child: CircularProgressIndicator(color: Colors.purpleAccent)),
-      );
-    }
-
-    if (isError || newsArticles.isEmpty) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          leading: BackButton(onPressed: () => context.go('/home')),
-          title: Text(
-            'Market News',
-            style: GoogleFonts.barlow(
-              color: Colors.purpleAccent,
-              fontSize: 22 * scale,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        body: Center(
-          child: Text(
-            'Failed to load news or no valid articles.',
-            style: TextStyle(color: Colors.white54, fontSize: 16 * scale),
-          ),
-        ),
-      );
-    }
+    final scale = MediaQuery.of(context).size.width / 900.0;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -144,23 +144,62 @@ class _NewsPageState extends State<NewsPage> {
           ),
         ),
       ),
-      body: RefreshIndicator(
-        onRefresh: fetchNews,
-        child: SizedBox(
-          height: 250 * scale,
+      body: Builder(builder: (context) {
+        if (isLoading) {
+          return const Center(child: CircularProgressIndicator(color: Colors.purpleAccent));
+        }
+
+        if (isError) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Failed to load news.',
+                  style: TextStyle(color: Colors.white54, fontSize: 16 * scale),
+                ),
+                SizedBox(height: 12 * scale),
+                ElevatedButton(
+                  onPressed: fetchNews,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purpleAccent,
+                  ),
+                  child: Text(
+                    'Retry',
+                    style: TextStyle(fontSize: 16 * scale),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Defensive: handle empty articles after fetch
+        if (newsArticles.isEmpty) {
+          return Center(
+            child: Text(
+              'No valid news articles available.',
+              style: TextStyle(color: Colors.white54, fontSize: 16 * scale),
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: fetchNews,
+          color: Colors.purpleAccent,
           child: ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 16 * scale, vertical: 18),
+            padding: EdgeInsets.symmetric(horizontal: 18 * scale, vertical: 22 * scale),
             scrollDirection: Axis.horizontal,
             itemCount: newsArticles.length,
-            separatorBuilder: (_, __) => SizedBox(width: 16 * scale),
+            separatorBuilder: (_, __) => SizedBox(width: 18 * scale),
             itemBuilder: (context, index) {
               final article = newsArticles[index];
               return GestureDetector(
-                onTap: () => _openUrl(article['url'] as String?),
+                onTap: () => _openUrl(article.url),
                 child: Container(
-                  width: 300 * scale,
+                  width: 280 * scale,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20 * scale),
+                    borderRadius: BorderRadius.circular(24 * scale),
                     gradient: const LinearGradient(
                       colors: [Color(0xFF3F1B8A), Colors.black87],
                       begin: Alignment.topLeft,
@@ -168,37 +207,40 @@ class _NewsPageState extends State<NewsPage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.deepPurple.shade900.withOpacity(0.7),
-                        offset: Offset(0, 6),
-                        blurRadius: 16,
+                        color: Colors.deepPurple.shade900.withOpacity(0.6),
+                        offset: Offset(0, 6 * scale),
+                        blurRadius: 16 * scale,
                       ),
                     ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (article['image'] != null && article['image'].toString().isNotEmpty)
+                      if (article.imageUrl.isNotEmpty)
                         ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20 * scale)),
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(24 * scale)),
                           child: Image.network(
-                            article['image'],
+                            article.imageUrl,
                             width: double.infinity,
                             height: 110 * scale,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              height: 110 * scale,
-                              color: Colors.grey.shade800,
-                              child: Icon(Icons.broken_image, color: Colors.white24, size: 40),
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  height: 110 * scale,
+                                  color: Colors.grey.shade800,
+                                  child: Icon(Icons.broken_image,
+                                      color: Colors.white24, size: 40 * scale),
+                                ),
                           ),
                         ),
                       Padding(
-                        padding: EdgeInsets.all(12 * scale),
+                        padding: EdgeInsets.all(13 * scale),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              article['headline'] ?? 'No title',
+                              article.headline,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.barlow(
@@ -207,9 +249,9 @@ class _NewsPageState extends State<NewsPage> {
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 6 * scale),
+                            SizedBox(height: 7 * scale),
                             Text(
-                              article['summary'] ?? '',
+                              article.summary,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.barlow(
@@ -217,9 +259,9 @@ class _NewsPageState extends State<NewsPage> {
                                 color: Colors.white70,
                               ),
                             ),
-                            Spacer(),
+                            SizedBox(height: 13 * scale), // Spacing for visual separation
                             Text(
-                              _formatTimestamp(article['datetime']),
+                              _formatTimestamp(article.datetime),
                               style: GoogleFonts.barlow(
                                 fontSize: 11 * scale,
                                 color: Colors.white38,
@@ -234,8 +276,8 @@ class _NewsPageState extends State<NewsPage> {
               );
             },
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

@@ -24,11 +24,11 @@ import '../presentation/pages/notification_settings_page.dart';
 import '../presentation/pages/notification_detail_page.dart';
 import '../presentation/pages/trading_history_page.dart';
 import '../presentation/pages/search_page.dart';
+import '../presentation/pages/orders_page.dart';
+import '../presentation/pages/stock_comparison_page.dart';
 
 import '../business_logic/models/stock.dart';
 import '../business_logic/models/notification_item.dart';
-import 'package:provider/provider.dart';
-import '../business_logic/providers/auth_provider.dart';
 
 import 'app_routes.dart';
 
@@ -61,17 +61,22 @@ class AppRouter {
         builder: (_, __) => const HomePage(),
       ),
 
-      // Corrected: use the correct parameter for symbol
+      // Trading Page: with optional symbol param
       GoRoute(
         path: '${AppRoutes.trading}/:symbol',
         builder: (context, state) {
           final symbol = state.pathParameters['symbol'] ?? '';
-          return TradingPage(symbol: symbol); // USE 'symbol', not stockSymbol
+          return TradingPage(symbol: symbol);
         },
       ),
       GoRoute(
         path: AppRoutes.trading,
         builder: (_, __) => const TradingPage(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.orders,
+        builder: (_, __) => const OrdersPage(),
       ),
 
       GoRoute(
@@ -107,11 +112,33 @@ class AppRouter {
         builder: (_, __) => const NotificationsPage(),
       ),
 
+      // Profile Page (with all required params)
       GoRoute(
         path: AppRoutes.profile,
         builder: (context, state) {
-          final userEmail = Provider.of<AuthProvider>(context, listen: false).userEmail ?? '';
-          return ProfilePage(userEmail: userEmail);
+          return ProfilePage(
+            userEmail: 'user@example.com',
+            userName: 'John Doe',
+            avatarUrl: '', // add if available
+            walletBalance: 100000.0,
+            premium: true,
+            details: {
+              'Joined': 'January 2025',
+              'Membership': 'Premium',
+              'Referral Code': 'ABCD1234',
+              'Phone': '+91 9876543210',
+              'Email Verified': 'Yes',
+              '2FA Enabled': 'Yes',
+              'Notifications': 'Enabled',
+              'Dark Mode': 'On',
+              'Language': 'English',
+              'Currency': 'INR',
+              'Time Zone': 'GMT+5:30',
+            },
+            onLogout: () {
+              context.go(AppRoutes.login);
+            },
+          );
         },
       ),
 
@@ -125,9 +152,12 @@ class AppRouter {
         builder: (_, __) => const MarketMoversPage(),
       ),
 
+      // News Page with nested detail route
       GoRoute(
         path: AppRoutes.news,
-        builder: (_, __) => const NewsPage(),
+        builder: (context, state) => NewsPage(
+          apiKey: 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20', // your actual API key
+        ),
         routes: [
           GoRoute(
             path: 'detail',
@@ -147,7 +177,7 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.watchlist,
-        builder: (_, __) => WatchlistPage(scale: 1.0),
+        builder: (_, __) => const WatchlistPage(scale: 1.0),
       ),
 
       GoRoute(
@@ -157,6 +187,11 @@ class AppRouter {
           final prices = state.extra as List<double>? ?? [150, 152, 148, 154, 156, 158];
           return StockChartPage(stockSymbol: symbol, prices: prices);
         },
+      ),
+
+      GoRoute(
+        path: AppRoutes.stockComparison,
+        builder: (_, __) => const StockComparisonPage(),
       ),
 
       GoRoute(

@@ -15,42 +15,47 @@ class ApiService {
   /// Throws an [Exception] if fetching fails or returns empty.
   Future<Stock> fetchStockQuote(String symbol) async {
     final url = Uri.parse('$baseUrl/quote?symbol=$symbol&token=$apiKey');
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-      if (data.isEmpty) {
-        throw Exception('No data available for symbol: $symbol');
+        if (data.isEmpty || data['c'] == null) {
+          throw Exception('No quote data available for symbol: $symbol');
+        }
+
+        return Stock(
+          symbol: symbol,
+          company: '', // Company name can be fetched separately if needed
+          price: (data['c'] as num).toDouble(),
+          previousClose: data['pc'] != null ? (data['pc'] as num).toDouble() : 0.0,
+          recentPrices: const [],
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized: Invalid API key.');
+      } else {
+        throw Exception('Failed to load stock quote for $symbol: HTTP ${response.statusCode}');
       }
-
-      return Stock(
-        symbol: symbol,
-        company: '', // Company name can be fetched separately if needed
-        price: (data['c'] as num).toDouble(),
-        previousClose: data['pc'] != null ? (data['pc'] as num).toDouble() : 0.0,
-        recentPrices: const [],
-      );
-    } else {
-      throw Exception('Failed to load stock quote for $symbol: HTTP ${response.statusCode}');
+    } catch (e) {
+      throw Exception('Network or parsing error while fetching stock quote for $symbol: $e');
     }
   }
 
-  /// Fetches stock quotes for multiple [symbols].
+  /// Fetches stock quotes for multiple [symbols] in parallel.
   ///
   /// Ignores individual fetch failures and continues.
   /// Returns list of successfully fetched [Stock] objects.
   Future<List<Stock>> fetchStocks(List<String> symbols) async {
-    List<Stock> stocks = [];
-    for (var symbol in symbols) {
-      try {
-        final stock = await fetchStockQuote(symbol);
-        stocks.add(stock);
-      } catch (e) {
-        // Individual errors ignored; could be logged here
-      }
-    }
-    return stocks;
+    final futures = symbols.map((symbol) =>
+        fetchStockQuote(symbol).catchError((e) {
+          // Log or handle individual fetch errors if desired
+          return null;
+        })
+    );
+
+    final results = await Future.wait(futures);
+    return results.whereType<Stock>().toList();
   }
 
   /// Fetches company profile information for the given [symbol].
@@ -59,19 +64,28 @@ class ApiService {
   /// Throws an [Exception] if fetching fails.
   Future<Stock> fetchCompanyProfile(String symbol) async {
     final url = Uri.parse('$baseUrl/stock/profile2?symbol=$symbol&token=$apiKey');
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return Stock(
-        symbol: symbol,
-        company: data['name'] ?? '',
-        price: 0.0,
-        previousClose: 0.0,
-        recentPrices: const [],
-      );
-    } else {
-      throw Exception('Failed to load company profile for $symbol: HTTP ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return Stock(
+          symbol: symbol,
+          company: data['name'] ?? '',
+          price: 0.0,
+          previousClose: 0.0,
+          recentPrices: const [],
+          // Add more fields if your Stock model supports them, e.g. logo, industry, website, etc.
+          // logo: data['logo'] ?? '',
+          // industry: data['finnhubIndustry'] ?? '',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized: Invalid API key.');
+      } else {
+        throw Exception('Failed to load company profile for $symbol: HTTP ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network or parsing error while fetching company profile for $symbol: $e');
     }
   }
 }

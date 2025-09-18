@@ -11,9 +11,12 @@ import 'business_logic/providers/notification_provider.dart';
 import 'business_logic/providers/theme_provider.dart';
 import 'business_logic/providers/watchlist_provider.dart';
 import 'business_logic/providers/stock_provider.dart';
+import 'business_logic/providers/news_provider.dart';
 
 class DemoApp extends StatelessWidget {
   const DemoApp({Key? key}) : super(key: key);
+
+  static const _apiKey = 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20';
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class DemoApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) {
-          final provider = MarketProvider(apiKey: 'YOUR_ACTUAL_API_KEY');
+          final provider = MarketProvider(apiKey: _apiKey);
           provider.startFetchingStocks(['AAPL', 'GOOGL', 'TSLA', 'MSFT']);
           return provider;
         }),
@@ -29,7 +32,12 @@ class DemoApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => WatchlistProvider()),
-        ChangeNotifierProvider(create: (_) => StockProvider()),
+        ChangeNotifierProvider(create: (_) => StockProvider(apiKey: _apiKey)),
+        ChangeNotifierProvider(create: (_) {
+          final newsProvider = NewsProvider(apiKey: _apiKey);
+          newsProvider.fetchNews();
+          return newsProvider;
+        }),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
