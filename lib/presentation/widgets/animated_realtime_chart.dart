@@ -1,11 +1,12 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
 
 import '../../business_logic/providers/market_provider.dart';
 import '../../business_logic/models/stock.dart';
+import 'candlestick_chart.dart'; // Import your candlestick widget here
 
 class AnimatedRealtimeChart extends StatefulWidget {
   final Color accentColor;
@@ -29,6 +30,8 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
   List<FlSpot> spots = [];
   int touchedIndex = -1;
   late final AnimationController _pulseController;
+
+  bool _showCandlestick = false;
 
   @override
   void initState() {
@@ -128,44 +131,71 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
     final marketProvider = context.watch<MarketProvider>();
     final glowColor = widget.accentColor;
 
+    final selectedStock = marketProvider.stocks.firstWhere(
+          (s) => s.symbol == selectedSymbol,
+      orElse: () => Stock(symbol: selectedSymbol, company: '', price: 0, previousClose: 0, recentPrices: []),
+    );
+
     final minY = prices.isNotEmpty ? prices.reduce(min) * 0.95 : 0.0;
     final maxY = prices.isNotEmpty ? prices.reduce(max) * 1.05 : 0.0;
-
-    final deltaPrice = (touchedIndex > 0 && touchedIndex < prices.length)
-        ? prices[touchedIndex] - prices[touchedIndex - 1]
-        : 0.0;
-    final deltaPercent = (touchedIndex > 0 && touchedIndex < prices.length && prices[touchedIndex - 1] != 0)
-        ? (deltaPrice / prices[touchedIndex - 1]) * 100
-        : 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16 * scale, vertical: 8),
-          child: DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: "Select Stock",
-              labelStyle: TextStyle(color: glowColor, fontWeight: FontWeight.bold),
-              filled: true,
-              fillColor: Colors.black26,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: glowColor)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: glowColor, width: 2)),
-            ),
-            dropdownColor: Colors.grey.shade900,
-            value: selectedSymbol.isEmpty ? null : selectedSymbol,
-            items: marketProvider.stocks.map((stock) {
-              return DropdownMenuItem(
-                value: stock.symbol,
-                child: Text(stock.symbol, style: const TextStyle(color: Colors.white)),
-              );
-            }).toList(),
-            onChanged: _onSymbolChanged,
+          child: Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: "Select Stock",
+                    labelStyle: TextStyle(color: glowColor, fontWeight: FontWeight.bold),
+                    filled: true,
+                    fillColor: Colors.black26,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: glowColor)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: glowColor, width: 2)),
+                  ),
+                  dropdownColor: Colors.grey.shade900,
+                  value: selectedSymbol.isEmpty ? null : selectedSymbol,
+                  items: marketProvider.stocks.map((stock) {
+                    return DropdownMenuItem(
+                      value: stock.symbol,
+                      child: Text(stock.symbol, style: const TextStyle(color: Colors.white)),
+                    );
+                  }).toList(),
+                  onChanged: _onSymbolChanged,
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: Row(
+                  children: [
+                    Text("Candlestick", style: TextStyle(color: glowColor, fontWeight: FontWeight.bold)),
+                    Switch(
+                      value: _showCandlestick,
+                      onChanged: (val) {
+                        setState(() {
+                          _showCandlestick = val;
+                          touchedIndex = -1;
+                        });
+                      },
+                      activeColor: glowColor,
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
+
         Expanded(
-          child: Stack(
+          child: _showCandlestick
+              ? CandlestickChartWidget(stockSymbol: selectedStock.symbol)
+
+              : Stack(
             children: [
               Padding(
                 padding: const EdgeInsets.all(12),
@@ -184,7 +214,7 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                   child: LineChart(
                     LineChartData(
                       minX: 0,
-                      maxX: prices.isNotEmpty ? (prices.length - 1).toDouble() : 30.0,
+                      maxX: prices.length > 0 ? (prices.length - 1).toDouble() : 30.0,
                       minY: minY,
                       maxY: maxY,
                       clipData: FlClipData.all(),
@@ -194,7 +224,7 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                         handleBuiltInTouches: true,
                         touchTooltipData: LineTouchTooltipData(
                           tooltipRoundedRadius: 12,
-                          tooltipBgColor: glowColor.withOpacity(double.parse((0.8).toStringAsFixed(3))),
+                          tooltipBgColor: glowColor.withOpacity(0.8),
                           getTooltipItems: (spots) {
                             return spots.map((spot) => LineTooltipItem(
                               spot.y.toStringAsFixed(2),
@@ -215,9 +245,9 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                             show: true,
                             gradient: LinearGradient(
                               colors: [
-                                glowColor.withOpacity(double.parse((0.3).toStringAsFixed(3))),
-                                glowColor.withOpacity(double.parse((0.8).toStringAsFixed(3))),
-                                glowColor.withOpacity(double.parse((0.3).toStringAsFixed(3))),
+                                glowColor.withOpacity(0.3),
+                                glowColor.withOpacity(0.8),
+                                glowColor.withOpacity(0.3),
                               ],
                               stops: const [0.2, 0.5, 0.8],
                               begin: Alignment.bottomCenter,
@@ -228,12 +258,12 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                             show: true,
                             getDotPainter: (spot, percent, bar, index) {
                               final isNewest = index == spots.length - 1;
-                              final double pulse = isNewest ? 7.0 + 3.0 * _pulseController.value : 6.0;
-                              final double opacity = isNewest ? 0.8 + 0.2 * _pulseController.value : 1.0;
+                              final double pulse = isNewest ? 7 + 3 * _pulseController.value : 6;
+                              final double opacity = isNewest ? 0.8 + 0.2 * _pulseController.value : 1;
                               return FlDotCirclePainter(
                                 radius: pulse,
-                                color: glowColor.withOpacity(double.parse(opacity.toStringAsFixed(3))),
-                                strokeWidth: isNewest ? 3.0 : 2.0,
+                                color: glowColor.withOpacity(opacity),
+                                strokeWidth: isNewest ? 3 : 2,
                                 strokeColor: Colors.white,
                               );
                             },
@@ -243,10 +273,10 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                       gridData: FlGridData(
                         show: true,
                         drawVerticalLine: false,
-                        horizontalInterval: 10.0,
+                        horizontalInterval: 10,
                         getDrawingHorizontalLine: (val) => FlLine(
-                          color: Colors.white.withOpacity(double.parse((0.15).toStringAsFixed(3))),
-                          strokeWidth: 1.0,
+                          color: Colors.white.withOpacity(0.15),
+                          strokeWidth: 1,
                         ),
                       ),
                       borderData: FlBorderData(show: false),
@@ -256,14 +286,11 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                           axisNameSize: 16,
                           sideTitles: SideTitles(
                             showTitles: true,
-                            interval: 5.0,
-                            reservedSize: 28.0,
+                            interval: 5,
+                            reservedSize: 28,
                             getTitlesWidget: (val, _) => Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                val.toInt().toString(),
-                                style: const TextStyle(color: Colors.white70),
-                              ),
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(val.toInt().toString(), style: const TextStyle(color: Colors.white70)),
                             ),
                           ),
                         ),
@@ -272,14 +299,11 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                           axisNameSize: 16,
                           sideTitles: SideTitles(
                             showTitles: true,
-                            interval: 10.0,
-                            reservedSize: 42.0,
+                            interval: 10,
+                            reservedSize: 42,
                             getTitlesWidget: (val, _) => Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Text(
-                                val.toInt().toString(),
-                                style: const TextStyle(color: Colors.white54),
-                              ),
+                              padding: const EdgeInsets.only(right: 8),
+                              child: Text(val.toInt().toString(), style: const TextStyle(color: Colors.white54)),
                             ),
                           ),
                         ),
@@ -301,7 +325,7 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                     color: glowColor,
                     shadows: [
                       Shadow(
-                        color: glowColor.withOpacity(double.parse((0.7).toStringAsFixed(3))),
+                        color: glowColor.withOpacity(0.7),
                         blurRadius: 5,
                         offset: const Offset(1, 1),
                       ),
@@ -312,6 +336,7 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
             ],
           ),
         ),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
@@ -325,35 +350,25 @@ class _AnimatedRealtimeChartState extends State<AnimatedRealtimeChart> with Sing
                   color: glowColor,
                 ),
               ),
-              touchedIndex >= 0 && touchedIndex < prices.length
+              _showCandlestick
+                  ? const SizedBox.shrink()
+                  : (touchedIndex >= 0 && touchedIndex < prices.length
                   ? Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     'Price: ${prices[touchedIndex].toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: glowColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: glowColor),
                   ),
                   if (touchedIndex > 0)
                     Text(
-                      'Δ: ${deltaPrice.toStringAsFixed(2)} (${deltaPercent.toStringAsFixed(2)}%)',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: glowColor.withOpacity(double.parse((0.8).toStringAsFixed(3))),
-                      ),
+                      'Δ: ${(prices[touchedIndex] - prices[touchedIndex - 1]).toStringAsFixed(2)}'
+                          ' (${((prices[touchedIndex] - prices[touchedIndex - 1]) / prices[touchedIndex - 1] * 100).toStringAsFixed(2)}%)',
+                      style: TextStyle(color: glowColor.withOpacity(0.8)),
                     ),
                 ],
               )
-                  : Text(
-                'Touch the chart for details',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white54,
-                ),
-              ),
+                  : const Text('Touch the chart for details', style: TextStyle(color: Colors.white54))),
             ],
           ),
         ),

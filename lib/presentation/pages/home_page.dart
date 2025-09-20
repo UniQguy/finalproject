@@ -57,7 +57,6 @@ class _HomePageState extends State<HomePage> {
         gradient: LinearGradient(
           colors: [
             primaryColor.withOpacity(0.9),
-            // Smooth gradient blend
             primaryColor.withOpacity(0.75),
             Colors.tealAccent.withOpacity(0.4),
           ],
@@ -143,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(28),
                 child: Image.asset(
                   'lib/assets/images/logo_.png',
-                  height: 190 * scale, // Increased size for better visibility
+                  height: 190 * scale,
                   fit: BoxFit.contain,
                   alignment: Alignment.center,
                 ),
@@ -203,27 +202,33 @@ class _HomePageState extends State<HomePage> {
           text: TextSpan(
             children: [
               TextSpan(
-                  text: 'Demo',
-                  style: GoogleFonts.barlow(
-                      fontSize: 24 * scale,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.orangeAccent)),
+                text: 'Demo',
+                style: GoogleFonts.barlow(
+                  fontSize: 24 * scale,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.orangeAccent,
+                ),
+              ),
               TextSpan(
-                  text: 'Trader',
-                  style: GoogleFonts.barlow(
-                      fontSize: 24 * scale,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.purpleAccent)),
+                text: 'Trader',
+                style: GoogleFonts.barlow(
+                  fontSize: 24 * scale,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.purpleAccent,
+                ),
+              ),
             ],
           ),
         ),
         actions: [
           IconButton(
-              icon: Icon(Icons.notifications_none, color: iconColor, size: 29 * scale),
-              onPressed: () => context.go('/notifications')),
+            icon: Icon(Icons.notifications_none, color: iconColor, size: 29 * scale),
+            onPressed: () => context.go('/notifications'),
+          ),
           IconButton(
-              icon: Icon(Icons.search, color: iconColor, size: 29 * scale),
-              onPressed: () => context.go('/search')),
+            icon: Icon(Icons.search, color: iconColor, size: 29 * scale),
+            onPressed: () => context.go('/search'),
+          ),
           SizedBox(width: 8),
         ],
       ),
@@ -238,21 +243,22 @@ class _HomePageState extends State<HomePage> {
             FadeSlideInView(index: 4, child: BalanceCard(scale: scale)),
             SizedBox(height: 30 * scale),
             FadeSlideInView(
-                index: 5,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22),
-                    color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: MarketTabs(),
-                )),
+              index: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22),
+                  color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: MarketTabs(),
+              ),
+            ),
             SizedBox(height: 18 * scale),
             FadeSlideInView(index: 6, child: FilterChips()),
             SizedBox(height: 28 * scale),

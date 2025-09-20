@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:candlesticks/candlesticks.dart';
+import 'package:provider/provider.dart';
 import '../../business_logic/models/stock.dart';
+import '../../business_logic/providers/stock_provider.dart';
 
 class CandlestickChartWidget extends StatefulWidget {
-  final Stock stock;
+  final String stockSymbol;
 
-  const CandlestickChartWidget({Key? key, required this.stock}) : super(key: key);
+  const CandlestickChartWidget({Key? key, required this.stockSymbol}) : super(key: key);
 
   @override
   State<CandlestickChartWidget> createState() => _CandlestickChartWidgetState();
@@ -13,27 +15,57 @@ class CandlestickChartWidget extends StatefulWidget {
 
 class _CandlestickChartWidgetState extends State<CandlestickChartWidget> {
   List<Candle> candles = [];
+  bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _generateCandles();
+    _fetchCandles();
   }
 
-  void _generateCandles() {
-    final prices = widget.stock.recentPrices;
+  Future<void> _fetchCandles() async {
+    final stockProvider = context.read<StockProvider>();
+    await stockProvider.fetchStocks([widget.stockSymbol]);
+    if (!mounted) return;
+
+    // Find the stock by symbol
+    Stock? stock;
+    for (final s in stockProvider.stocks) {
+      if (s.symbol == widget.stockSymbol) {
+        stock = s;
+        break;
+      }
+    }
+
+    if (stock == null) {
+      setState(() {
+        errorMessage = "No stock found for symbol: ${widget.stockSymbol}";
+        isLoading = false;
+      });
+      return;
+    }
+
+    // Use available price data (recentPrices is just a List<double>)
+    final prices = stock.recentPrices ?? [];
+    if (prices.isEmpty) {
+      setState(() {
+        errorMessage = "No price data available.";
+        isLoading = false;
+      });
+      return;
+    }
+
     List<Candle> data = [];
     final now = DateTime.now();
     final len = prices.length;
 
     for (int i = 0; i < len; i++) {
-      double open = prices[i] * (0.98 + (i % 3) * 0.01); // simulate variability
+      double open = prices[i] * (0.98 + (i % 3) * 0.01);
       double close = prices[i];
-      double high =
-          (open > close ? open : close) * (1 + 0.02 * (i % 2)); // higher of open/close with a % up
-      double low =
-          (open < close ? open : close) * (1 - 0.02 * ((i + 1) % 2)); // lower of open/close with % down
-      double volume = 1000 + 500 * (i % 5); // simulated volume
+      double high = (open > close ? open : close) * (1 + 0.02 * (i % 2));
+      double low = (open < close ? open : close) * (1 - 0.02 * ((i + 1) % 2));
+      double volume = 1000 + 500 * (i % 5);
 
       data.add(
         Candle(
@@ -47,7 +79,11 @@ class _CandlestickChartWidgetState extends State<CandlestickChartWidget> {
       );
     }
 
-    setState(() => candles = data);
+    setState(() {
+      candles = data;
+      isLoading = false;
+      errorMessage = null;
+    });
   }
 
   @override
@@ -63,11 +99,14 @@ class _CandlestickChartWidgetState extends State<CandlestickChartWidget> {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Candlesticks(
+      child: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : errorMessage != null
+          ? Center(child: Text(errorMessage!))
+          : Candlesticks(
         candles: candles,
         onLoadMoreCandles: () async {
-          // Optional: Fetch and append more candle data here
-          await Future.delayed(const Duration(seconds: 1));
+          // Optionally implement fetching more data here
         },
       ),
     );
