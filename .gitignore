@@ -34,6 +34,10 @@ migrate_working_dir/
 # Android build output files
 android/app/build/
 *.apk
+*.aab
+
+# iOS build output files
+*.ipa
 
 # Android Studio cache and logs
 .gradle/
@@ -45,3 +49,21 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# Common large/binary files
+*.zip
+*.mp4
+*.mov
+*.avi
+*.flv
+*.wmv
+*.mp3
+*.wav
+*.ogg
+*.webm
+*.exe
+*.dll
+*.so
+
+# Flutter generated files
+flutter_*.png
