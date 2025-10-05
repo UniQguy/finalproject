@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum OrderType { call, put }
 
 class TradeOrder {
@@ -33,6 +35,41 @@ class TradeOrder {
       'quantity': quantity,
       'timestamp': timestamp.toIso8601String(),
     };
+  }
+
+  // Converts to Firestore map (timestamp field as DateTime)
+  Map<String, dynamic> toMap() {
+    return {
+      'stockSymbol': stockSymbol,
+      'type': type.name,
+      'price': price,
+      'quantity': quantity,
+      'timestamp': timestamp,
+    };
+  }
+
+  // Creates object from Firestore document map with safe Timestamp conversion
+  factory TradeOrder.fromMap(Map<String, dynamic> map) {
+    var ts = map['timestamp'];
+    DateTime dateTime;
+
+    if (ts is Timestamp) {
+      dateTime = ts.toDate();
+    } else if (ts is DateTime) {
+      dateTime = ts;
+    } else if (ts is String) {
+      dateTime = DateTime.parse(ts);
+    } else {
+      throw ArgumentError('Cannot parse timestamp: $ts');
+    }
+
+    return TradeOrder(
+      stockSymbol: map['stockSymbol'] as String,
+      type: _stringToOrderType(map['type'] as String),
+      price: (map['price'] as num).toDouble(),
+      quantity: map['quantity'] as int,
+      timestamp: dateTime,
+    );
   }
 
   static OrderType _stringToOrderType(String type) {

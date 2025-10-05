@@ -2,35 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
-// Example order model (customize as needed)
-class Order {
-  final String symbol;
-  final String type; // "Buy" or "Sell"
-  final int quantity;
-  final double price;
-  final DateTime date;
+import '../../business_logic/providers/portfolio_provider.dart';
+import '../../business_logic/models/trade_order.dart';
+import 'package:provider/provider.dart';
 
-  Order({
-    required this.symbol,
-    required this.type,
-    required this.quantity,
-    required this.price,
-    required this.date,
-  });
-}
-
-// Dummy orders for demonstration
-final List<Order> demoOrders = [
-  Order(symbol: "AAPL", type: "Buy", quantity: 10, price: 229.99, date: DateTime.now().subtract(Duration(days: 1))),
-  Order(symbol: "GOOGL", type: "Sell", quantity: 5, price: 207.21, date: DateTime.now().subtract(Duration(days: 2))),
-  Order(symbol: "MSFT", type: "Buy", quantity: 2, price: 506.22, date: DateTime.now().subtract(Duration(hours: 8))),
-];
-
+/// Displays a dynamic list of trade orders made by the user with sorting and filtering.
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final portfolioProvider = context.watch<PortfolioProvider>();
+    final List<TradeOrder> tradeHistory = List.from(portfolioProvider.tradeHistory);
+
+    tradeHistory.sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Most recent first
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -42,10 +28,10 @@ class OrdersPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.go('/home'),  // Navigate to homepage on back
+          onPressed: () => context.go('/home'),
         ),
       ),
-      body: demoOrders.isEmpty
+      body: tradeHistory.isEmpty
           ? Center(
         child: Text(
           "No Orders Found",
@@ -54,10 +40,14 @@ class OrdersPage extends StatelessWidget {
       )
           : ListView.separated(
         padding: const EdgeInsets.all(20),
-        itemCount: demoOrders.length,
+        itemCount: tradeHistory.length,
         separatorBuilder: (_, __) => Divider(color: Colors.white24),
         itemBuilder: (context, index) {
-          final order = demoOrders[index];
+          final order = tradeHistory[index];
+          final isBuy = order.type == OrderType.call;
+          final typeText = isBuy ? 'Buy' : 'Sell';
+          final typeColor = isBuy ? Colors.greenAccent : Colors.redAccent;
+
           return Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -75,11 +65,11 @@ class OrdersPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${order.type} ${order.quantity} x ${order.symbol}",
+                  "$typeText ${order.quantity} x ${order.stockSymbol}",
                   style: GoogleFonts.barlow(
                     fontWeight: FontWeight.bold,
                     fontSize: 19,
-                    color: Colors.tealAccent,
+                    color: typeColor,
                   ),
                 ),
                 const SizedBox(height: 7),
@@ -92,7 +82,7 @@ class OrdersPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 Text(
-                  "Date: ${order.date.toLocal().toString().split(' ')[0]}",
+                  "Date: ${order.timestamp.toLocal().toString().split(' ')[0]}",
                   style: GoogleFonts.barlow(
                     color: Colors.white70,
                     fontSize: 13,

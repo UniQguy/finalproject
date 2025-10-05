@@ -7,6 +7,7 @@ import '../presentation/pages/auth/login_page.dart';
 import '../presentation/pages/auth/signup_page.dart';
 import '../presentation/pages/password_reset_page.dart';
 import '../presentation/pages/home_page.dart';
+
 import '../presentation/pages/trading_page.dart';
 import '../presentation/pages/order_confirmation_page.dart';
 import '../presentation/pages/portfolio_page.dart';
@@ -26,6 +27,7 @@ import '../presentation/pages/trading_history_page.dart';
 import '../presentation/pages/search_page.dart';
 import '../presentation/pages/orders_page.dart';
 import '../presentation/pages/stock_comparison_page.dart';
+import '../presentation/pages/learn_page.dart';
 
 import '../business_logic/models/stock.dart';
 import '../business_logic/models/notification_item.dart';
@@ -60,8 +62,6 @@ class AppRouter {
         path: AppRoutes.home,
         builder: (_, __) => const HomePage(),
       ),
-
-      // Trading Page: with optional symbol param
       GoRoute(
         path: '${AppRoutes.trading}/:symbol',
         builder: (context, state) {
@@ -73,19 +73,16 @@ class AppRouter {
         path: AppRoutes.trading,
         builder: (_, __) => const TradingPage(),
       ),
-
       GoRoute(
         path: AppRoutes.orders,
         builder: (_, __) => const OrdersPage(),
       ),
-
       GoRoute(
         path: '${AppRoutes.orderConfirmation}/:symbol/:quantity/:isCall',
         builder: (context, state) {
           final symbol = state.pathParameters['symbol'] ?? '';
           final quantity = int.tryParse(state.pathParameters['quantity'] ?? '1') ?? 1;
           final isCall = (state.pathParameters['isCall'] ?? 'true') == 'true';
-
           final stock = Stock(
             symbol: symbol,
             company: '',
@@ -93,7 +90,6 @@ class AppRouter {
             previousClose: 0,
             recentPrices: [],
           );
-
           return OrderConfirmationPage(
             stock: stock,
             quantity: quantity,
@@ -101,62 +97,43 @@ class AppRouter {
           );
         },
       ),
-
       GoRoute(
         path: AppRoutes.portfolio,
         builder: (_, __) => const PortfolioPage(),
       ),
-
       GoRoute(
         path: AppRoutes.notifications,
         builder: (_, __) => const NotificationsPage(),
       ),
-
-      // Profile Page (with all required params)
+      GoRoute(
+        path: AppRoutes.learn,
+        builder: (_, __) => const LearnPage(),
+      ),
       GoRoute(
         path: AppRoutes.profile,
         builder: (context, state) {
           return ProfilePage(
-            userEmail: 'user@example.com',
-            userName: 'John Doe',
-            avatarUrl: '', // add if available
+            email: 'user@example.com',
+            displayName: 'John Doe',
+            avatarUrl: '', // (or any actual image asset or network URL)
             walletBalance: 100000.0,
             premium: true,
-            details: {
-              'Joined': 'January 2025',
-              'Membership': 'Premium',
-              'Referral Code': 'ABCD1234',
-              'Phone': '+91 9876543210',
-              'Email Verified': 'Yes',
-              '2FA Enabled': 'Yes',
-              'Notifications': 'Enabled',
-              'Dark Mode': 'On',
-              'Language': 'English',
-              'Currency': 'INR',
-              'Time Zone': 'GMT+5:30',
-            },
-            onLogout: () {
-              context.go(AppRoutes.login);
-            },
+            onLogout: () => context.go(AppRoutes.login),
           );
         },
       ),
-
       GoRoute(
         path: AppRoutes.settings,
         builder: (_, __) => const SettingsPage(),
       ),
-
       GoRoute(
         path: AppRoutes.marketMovers,
         builder: (_, __) => const MarketMoversPage(),
       ),
-
-      // News Page with nested detail route
       GoRoute(
         path: AppRoutes.news,
         builder: (context, state) => NewsPage(
-          apiKey: 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20', // your actual API key
+          apiKey: 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20',
         ),
         routes: [
           GoRoute(
@@ -174,41 +151,33 @@ class AppRouter {
           ),
         ],
       ),
-
       GoRoute(
         path: AppRoutes.watchlist,
         builder: (_, __) => const WatchlistPage(scale: 1.0),
       ),
-
       GoRoute(
         path: AppRoutes.stockChart,
         builder: (context, state) {
           final symbol = state.uri.queryParameters['symbol'] ?? 'AAPL';
-          final prices = state.extra as List<double>? ?? [150, 152, 148, 154, 156, 158];
-          return StockChartPage(stockSymbol: symbol, prices: prices);
+          return StockChartPage(stockSymbol: symbol);
         },
       ),
-
       GoRoute(
         path: AppRoutes.stockComparison,
         builder: (_, __) => const StockComparisonPage(),
       ),
-
       GoRoute(
         path: AppRoutes.accountSettings,
         builder: (_, __) => const AccountSettingsPage(),
       ),
-
       GoRoute(
         path: AppRoutes.appearanceSettings,
         builder: (_, __) => const AppearanceSettingsPage(),
       ),
-
       GoRoute(
         path: AppRoutes.notificationSettings,
         builder: (_, __) => const NotificationSettingsPage(),
       ),
-
       GoRoute(
         path: AppRoutes.notificationDetail,
         builder: (context, state) {
@@ -221,12 +190,10 @@ class AppRouter {
           return NotificationDetailPage(notification: notification);
         },
       ),
-
       GoRoute(
         path: AppRoutes.search,
         builder: (_, __) => const SearchPage(),
       ),
-
       GoRoute(
         path: AppRoutes.tradingHistory,
         builder: (_, __) => const TradingHistoryPage(),

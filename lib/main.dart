@@ -13,7 +13,7 @@ import 'business_logic/providers/stock_provider.dart';
 import 'business_logic/providers/theme_provider.dart';
 import 'business_logic/providers/wallet_provider.dart';
 import 'business_logic/providers/watchlist_provider.dart';
-import 'business_logic/providers/news_provider.dart'; // <-- Add this import
+import 'business_logic/providers/news_provider.dart';
 
 const String finnhubApiKey = 'd2jhgg9r01qj8a5jdo1gd2jhgg9r01qj8a5jdo20';
 
@@ -27,13 +27,29 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => MarketProvider(apiKey: finnhubApiKey)),
+        ChangeNotifierProvider(create: (_) {
+          final provider = MarketProvider(apiKey: finnhubApiKey);
+          provider.startFetchingStocks(['AAPL', 'GOOGL', 'TSLA', 'MSFT']);
+          return provider;
+        }),
+        ChangeNotifierProxyProvider2<AuthProvider, MarketProvider, PortfolioProvider>(
+          create: (_) => PortfolioProvider(userId: '', marketProvider: null),
+          update: (context, authProvider, marketProvider, previous) {
+            final uid = authProvider.userId ?? '';
+            return PortfolioProvider(userId: uid, marketProvider: marketProvider);
+          },
+        ),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        ChangeNotifierProvider(create: (_) => PortfolioProvider()),
-        ChangeNotifierProvider(create: (_) => StockProvider(apiKey: finnhubApiKey)), // <-- Pass API key!
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => WalletProvider()),
         ChangeNotifierProvider(create: (_) => WatchlistProvider()),
+        ChangeNotifierProvider(create: (_) => StockProvider(apiKey: finnhubApiKey)),
+        ChangeNotifierProxyProvider<AuthProvider, WalletProvider>(
+          create: (_) => WalletProvider(userId: ''),
+          update: (context, authProvider, previous) {
+            final uid = authProvider.userId ?? '';
+            return WalletProvider(userId: uid);
+          },
+        ),
         ChangeNotifierProvider(create: (_) {
           final newsProvider = NewsProvider(apiKey: finnhubApiKey);
           newsProvider.fetchNews();

@@ -21,6 +21,9 @@ class AuthProvider extends ChangeNotifier {
   String? get userEmail => _userEmail;
   String? get avatarPath => _avatarPath;
 
+  /// Expose userId for components needing user identification
+  String? get userId => _auth.currentUser?.uid;
+
   AuthProvider() {
     _loadFromPrefs();
     _auth.authStateChanges().listen((user) {

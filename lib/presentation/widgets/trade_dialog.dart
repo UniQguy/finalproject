@@ -9,7 +9,7 @@ import '../../business_logic/providers/wallet_provider.dart';
 class TradeDialog extends StatefulWidget {
   final Stock stock;
 
-  const TradeDialog({super.key, required this.stock}); // super parameter style
+  const TradeDialog({super.key, required this.stock});
 
   @override
   State<TradeDialog> createState() => _TradeDialogState();
@@ -34,7 +34,7 @@ class _TradeDialogState extends State<TradeDialog> {
     super.dispose();
   }
 
-  void placeOrder() {
+  Future<void> placeOrder() async {
     final wallet = Provider.of<WalletProvider>(context, listen: false);
     final portfolio = Provider.of<PortfolioProvider>(context, listen: false);
 
@@ -56,7 +56,7 @@ class _TradeDialogState extends State<TradeDialog> {
         );
         return;
       }
-      final success = wallet.deduct(totalPrice);
+      final success = await wallet.deduct(totalPrice);
       if (!success) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to deduct from wallet')),
@@ -64,12 +64,32 @@ class _TradeDialogState extends State<TradeDialog> {
         return;
       }
     } else {
-      // TODO: Implement portfolio holdings check before selling (future enhancement)
-      // For now, sell will always succeed and add money.
-      wallet.add(totalPrice);
+      // SELL logic
+
+      // Check holding quantity
+      final holding = portfolio.holdingFor(widget.stock.symbol);
+      if (holding == null || holding.quantity < qty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Not enough shares to sell')),
+        );
+        return;
+      }
+
+      // Calculate P&L
+      final avgBuyPrice = holding.price;
+      final pnl = (widget.stock.price - avgBuyPrice) * qty;
+      final creditAmount = widget.stock.price * qty;
+
+      // Credit wallet with sell amount
+      await wallet.credit(creditAmount);
+
+      // Update portfolio
+      await portfolio.sellOrder(widget.stock.symbol, qty, widget.stock.price);
+
+      // Optionally: Show P&L notification here if you want
     }
 
-    portfolio.addOrder(TradeOrder(
+    await portfolio.addOrder(TradeOrder(
       stockSymbol: widget.stock.symbol,
       type: orderType == 'Buy' ? OrderType.call : OrderType.put,
       price: widget.stock.price,
@@ -128,7 +148,7 @@ class _TradeDialogState extends State<TradeDialog> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: placeOrder,
+              onPressed: () async => await placeOrder(),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
               child: const Text('Place Order'),
             ),

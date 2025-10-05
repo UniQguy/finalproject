@@ -222,6 +222,11 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.school, color: iconColor, size: 29 * scale),
+            tooltip: 'Learn',
+            onPressed: () => context.go('/learn'),
+          ),
+          IconButton(
             icon: Icon(Icons.notifications_none, color: iconColor, size: 29 * scale),
             onPressed: () => context.go('/notifications'),
           ),

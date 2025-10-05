@@ -7,10 +7,8 @@ class AppRoutes {
   static const home = '/home';
   static const orders = '/orders';
 
-
   static const trading = '/trade';
   static const stockComparison = '/stock-comparison';
-
 
   static const orderConfirmation = '/order-confirmation';
 
@@ -28,4 +26,7 @@ class AppRoutes {
   static const appearanceSettings = '/appearance-settings';
   static const notificationSettings = '/notification-settings';
   static const notificationDetail = '/notification-detail';
+
+  // Added learn page path here
+  static const learn = '/learn';
 }

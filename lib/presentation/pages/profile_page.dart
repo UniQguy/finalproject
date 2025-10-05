@@ -1,25 +1,21 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String userEmail;
-  final String userName;
-  final String avatarUrl;
-  final double walletBalance;
+  final String email;
+  final String? avatarUrl;
   final bool premium;
-  final Map<String, dynamic> details;
+  final double walletBalance;
+  final String displayName;
   final VoidCallback onLogout;
 
   const ProfilePage({
     super.key,
-    required this.userEmail,
-    required this.userName,
-    required this.avatarUrl,
+    required this.email,
+    required this.displayName,
     required this.walletBalance,
     required this.premium,
-    required this.details,
+    this.avatarUrl,
     required this.onLogout,
   });
 
@@ -29,31 +25,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController _nameController;
-  late String _email;
-
-  String _generateRandomUsername() {
-    // Simple Reddit-style random username generator
-    const adjectives = ['Wise', 'Brave', 'Happy', 'Clever', 'Swift', 'Bold'];
-    const nouns = ['Eagle', 'Lion', 'Tiger', 'Wolf', 'Falcon', 'Bear'];
-    final rand = Random();
-    final adjective = adjectives[rand.nextInt(adjectives.length)];
-    final noun = nouns[rand.nextInt(nouns.length)];
-    final number = rand.nextInt(9999);
-    return '$adjective$noun$number';
-  }
-
-  String _generatePlaceholderEmail(String username) {
-    return '${username.toLowerCase()}@example.com';
-  }
+  bool _editing = false;
 
   @override
   void initState() {
     super.initState();
-
-    final username = widget.userName.trim().isEmpty ? _generateRandomUsername() : widget.userName;
-    _nameController = TextEditingController(text: username);
-
-    _email = widget.userEmail.trim().isEmpty ? _generatePlaceholderEmail(username) : widget.userEmail;
+    _nameController = TextEditingController(text: widget.displayName);
   }
 
   @override
@@ -62,213 +39,173 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
+  // Simulate updating name (replace with DB/firestore in real app)
   void _saveName() {
-    FocusScope.of(context).unfocus();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Name updated to "${_nameController.text.trim()}"')),
-    );
-    // Optionally you can update state or inform a parent widget here...
-  }
-
-  void _showInfoDialog(String title, String content) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.black87,
-        title: Text(title, style: GoogleFonts.poppins(color: Colors.tealAccent, fontWeight: FontWeight.bold)),
-        content: Text(content, style: GoogleFonts.poppins(color: Colors.white70)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text("Close", style: GoogleFonts.poppins(color: Colors.tealAccent))),
-        ],
-      ),
-    );
-  }
-
-  IconData _getIconForKey(String key) {
-    switch (key.toLowerCase()) {
-      case 'referral code':
-        return Icons.card_giftcard;
-      case 'phone':
-        return Icons.phone;
-      case 'email verified':
-        return Icons.verified_user;
-      case '2fa enabled':
-        return Icons.security;
-      case 'joined':
-        return Icons.calendar_today;
-      case 'notifications':
-        return Icons.notifications;
-      case 'dark mode':
-        return Icons.dark_mode;
-      case 'language':
-        return Icons.language;
-      case 'currency':
-        return Icons.attach_money;
-      case 'time zone':
-        return Icons.schedule;
-      default:
-        return Icons.info_outline;
-    }
+    setState(() {
+      // Save to database here as needed!
+      _editing = false;
+    });
+    // Show snackbar for demo
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Name updated!')));
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? Colors.grey[900] : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final accent = Colors.deepPurpleAccent;
 
     return Scaffold(
-      backgroundColor: isDark ? Colors.black : Colors.white,
       appBar: AppBar(
-        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
-        elevation: 1,
-        title: Text('Profile', style: GoogleFonts.poppins(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 22)),
-        centerTitle: true,
+        title: Text('Profile', style: GoogleFonts.barlow(fontWeight: FontWeight.bold)),
+        backgroundColor: accent,
+        leading: BackButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+        actions: [
+          IconButton(icon: Icon(Icons.logout), onPressed: widget.onLogout, tooltip: 'Logout'),
+        ],
       ),
+      backgroundColor: isDark ? Colors.black : Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 28),
         child: Column(
           children: [
             CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.tealAccent.withOpacity(0.3),
-              backgroundImage: widget.avatarUrl.isNotEmpty ? NetworkImage(widget.avatarUrl) : null,
-              child: widget.avatarUrl.isEmpty ? Icon(Icons.person, size: 64, color: Colors.tealAccent.withOpacity(0.5)) : null,
+              radius: 48,
+              backgroundImage: widget.avatarUrl?.isNotEmpty == true
+                  ? NetworkImage(widget.avatarUrl!)
+                  : AssetImage('assets/images/avatar_placeholder.png') as ImageProvider,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
+            if (_editing)
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _nameController,
+                      autofocus: true,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _saveName(),
+                      decoration: InputDecoration(
+                        labelText: 'Your Name',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        filled: true,
+                        fillColor: isDark ? Colors.grey[850] : Colors.grey[50],
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.check, color: accent),
+                    onPressed: _saveName,
+                  ),
+                ],
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _nameController.text,
+                    style: GoogleFonts.barlow(
+                        fontSize: 26, fontWeight: FontWeight.w800, color: accent),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit, size: 22, color: accent),
+                    onPressed: () => setState(() => _editing = true),
+                    tooltip: 'Edit Name',
+                  )
+                ],
+              ),
+            const SizedBox(height: 8),
+            Text(widget.email, style: TextStyle(fontSize: 16, color: Colors.blueAccent)),
+            const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  child: TextField(
-                    controller: _nameController,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87),
-                    decoration: const InputDecoration(border: InputBorder.none, hintText: 'Enter your name'),
+                if (widget.premium)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.white, size: 18),
+                        const SizedBox(width: 6),
+                        Text('Premium', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.check_circle, color: Colors.tealAccent, size: 28),
-                  tooltip: 'Save Name',
-                  onPressed: _saveName,
-                )
-              ],
-            ),
-            Text(
-              _email,
-              style: GoogleFonts.poppins(fontSize: 16, color: isDark ? Colors.white54 : Colors.black54),
-            ),
-            const SizedBox(height: 28),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _InfoCard(
-                  icon: Icons.account_balance_wallet,
-                  label: 'Wallet Balance',
-                  value: '₹${widget.walletBalance.toStringAsFixed(2)}',
-                  color: Colors.tealAccent,
-                  onTap: () {
-                    _showInfoDialog('Wallet Balance', 'Your spendable trading balance.');
-                  },
-                ),
-                _InfoCard(
-                  icon: widget.premium ? Icons.workspace_premium : Icons.workspace_premium_outlined,
-                  label: 'Membership',
-                  value: widget.premium ? 'Active' : 'Inactive',
-                  color: widget.premium ? Colors.amber : Colors.grey,
-                  onTap: () {
-                    _showInfoDialog(
-                        'Membership',
-                        widget.premium ? 'Premium access: All features unlocked.' : 'Upgrade to premium to access exclusive features.');
-                  },
+                if (widget.premium) const SizedBox(width: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.teal,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.account_balance_wallet, color: Colors.white, size: 18),
+                      const SizedBox(width: 6),
+                      Text(
+                        '₹${widget.walletBalance.toStringAsFixed(2)}',
+                        style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            if (widget.details.isNotEmpty)
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: widget.details.length,
-                separatorBuilder: (_, __) => Divider(color: isDark ? Colors.white10 : Colors.black12),
-                itemBuilder: (context, index) {
-                  final key = widget.details.keys.elementAt(index);
-                  final value = widget.details[key];
-                  return ListTile(
-                    leading: Icon(_getIconForKey(key), color: Colors.tealAccent),
-                    title: Text(key, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
-                    subtitle: Text(value.toString(), style: GoogleFonts.poppins(color: isDark ? Colors.white60 : Colors.black54)),
-                    onTap: () {
-                      _showInfoDialog(key, value.toString());
-                    },
-                  );
-                },
+            Card(
+              color: cardColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              elevation: 6,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                child: Column(
+                  children: [
+                    _infoRow('Member Since', 'October 2025', accent, textColor),
+                    _infoRow('Status', widget.premium ? 'Premium' : 'Regular', accent, textColor),
+                    _infoRow('App Version', '1.0.0', accent, textColor),
+                    _infoRow('Theme', isDark ? 'Dark' : 'Light', accent, textColor),
+                  ],
+                ),
               ),
-            const SizedBox(height: 36),
+            ),
+            const SizedBox(height: 32),
             ElevatedButton.icon(
-              icon: const Icon(Icons.logout, color: Colors.white),
-              label: Text('Logout', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18)),
+              icon: const Icon(Icons.settings),
+              label: const Text('Account Settings'),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/settings');
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-                elevation: 3,
+                backgroundColor: accent,
+                elevation: 4,
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
               ),
-              onPressed: widget.onLogout,
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _InfoCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _InfoCard({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Flexible(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF202020) : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.3),
-                blurRadius: 14,
-                offset: const Offset(0, 4),
-              )
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(height: 8),
-              Text(label, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16, color: isDark ? Colors.white70 : Colors.black87)),
-              const SizedBox(height: 6),
-              Text(value, style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20, color: color)),
-            ],
-          ),
-        ),
+  Widget _infoRow(String label, String value, Color accent, Color textColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7),
+      child: Row(
+        children: [
+          Expanded(
+              child: Text(label, style: TextStyle(fontWeight: FontWeight.w600, color: accent))),
+          Expanded(
+              child: Text(value, textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w500, color: textColor))),
+        ],
       ),
     );
   }

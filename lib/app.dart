@@ -28,7 +28,13 @@ class DemoApp extends StatelessWidget {
           provider.startFetchingStocks(['AAPL', 'GOOGL', 'TSLA', 'MSFT']);
           return provider;
         }),
-        ChangeNotifierProvider(create: (_) => PortfolioProvider()),
+        ChangeNotifierProxyProvider2<AuthProvider, MarketProvider, PortfolioProvider>(
+          create: (_) => PortfolioProvider(userId: '', marketProvider: null),
+          update: (context, authProvider, marketProvider, previous) {
+            final uid = authProvider.userId ?? '';
+            return PortfolioProvider(userId: uid, marketProvider: marketProvider);
+          },
+        ),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => WatchlistProvider()),

@@ -53,3 +53,9 @@ flutter:
     - lib/assets/images/cyborg_hand_left.png
     - lib/assets/images/cyborg_hand_right.png
     - lib/assets/images/google_logo.png
+    - lib/assets/images/stock_market_basics.png
+    - lib/assets/images/trading_fundamentals.png
+    - lib/assets/images/market_analysis.png
+    - lib/assets/images/risk_management.png
+    - lib/assets/images/getting_started.png
+    - lib/assets/images/useful_resources.png
